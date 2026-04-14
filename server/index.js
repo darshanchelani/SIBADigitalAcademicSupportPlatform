@@ -50,9 +50,13 @@ app.use(compression());
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
   : ['http://localhost:5173'];
+if (process.env.FRONTEND_URL && !allowedOrigins.includes(process.env.FRONTEND_URL)) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
 app.use(
   cors({
     origin: (origin, cb) => {
+      // Allow same-origin requests (no origin header) and allowed origins
       if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
       cb(new Error('Not allowed by CORS'));
     },
