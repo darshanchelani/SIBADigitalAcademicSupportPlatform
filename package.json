@@ -1,0 +1,21 @@
+{
+  "name": "sdasp",
+  "version": "1.0.0",
+  "description": "SDASP Progressive Web App",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix server\"",
+    "install:all": "npm install && npm install --prefix client && npm install --prefix server",
+    "build": "npm install --prefix client && npm install --prefix server && npm run build --prefix client",
+    "start": "node server/index.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "mongodb": "^7.0.0"
+  }
+}

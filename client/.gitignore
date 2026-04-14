@@ -1,0 +1,37 @@
+# Node modules
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+
+# Coverage reports
+coverage/
+
+# TypeScript
+*.tsbuildinfo
+
+# IDE / Editor files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+
+# GitHub / macOS files
+.DS_Store
+
+# Config files that are generated or local
+postcss.config.js
+tailwind.config.js
+vite.config.js
+
+# Lint / Formatter configs
+.eslintrc*
+.prettier*
