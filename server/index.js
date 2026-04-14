@@ -10,6 +10,9 @@ const path = require('node:path');
 
 const app = express();
 
+// Trust proxy (required for Render / reverse proxies — fixes express-rate-limit)
+app.set('trust proxy', 1);
+
 // ========================================
 // ERROR LOGGING SYSTEM
 // ========================================
