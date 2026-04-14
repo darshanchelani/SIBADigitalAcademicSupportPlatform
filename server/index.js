@@ -174,9 +174,14 @@ const PORT = process.env.PORT || 5000;
 
 // Only start server if not in test environment
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-  });
+  console.log(`⏳ Attempting to bind to 0.0.0.0:${PORT}...`);
+  app
+    .listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    })
+    .on('error', (err) => {
+      console.error('❌ Failed to start server:', err);
+    });
 }
 
 module.exports = app;
