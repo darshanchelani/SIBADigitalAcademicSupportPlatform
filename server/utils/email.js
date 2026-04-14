@@ -1,18 +1,35 @@
-﻿const { Resend } = require('resend');
+﻿const brevo = require('@getbrevo/brevo');
 
-let resend;
-const getResend = () => {
-  if (!resend) {
-    if (!process.env.RESEND_API_KEY) {
-      console.warn('⚠️ RESEND_API_KEY not set — emails will not be sent');
+let apiInstance;
+const getBrevoClient = () => {
+  if (!apiInstance) {
+    if (!process.env.BREVO_API_KEY) {
+      console.warn('⚠️ BREVO_API_KEY not set — emails will not be sent');
       return null;
     }
-    resend = new Resend(process.env.RESEND_API_KEY);
+    apiInstance = new brevo.TransactionalEmailsApi();
+    apiInstance.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
   }
-  return resend;
+  return apiInstance;
 };
 
-const FROM_EMAIL = process.env.EMAIL_FROM || 'SDASP <onboarding@resend.dev>';
+const SENDER_NAME = 'SDASP';
+const SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || 'darshanchelani007@gmail.com';
+
+const sendEmail = async (to, subject, html, text) => {
+  const client = getBrevoClient();
+  if (!client) return { success: false, error: 'Email service not configured' };
+
+  const sendSmtpEmail = new brevo.SendSmtpEmail();
+  sendSmtpEmail.sender = { name: SENDER_NAME, email: SENDER_EMAIL };
+  sendSmtpEmail.to = [{ email: to }];
+  sendSmtpEmail.subject = subject;
+  sendSmtpEmail.htmlContent = html;
+  sendSmtpEmail.textContent = text;
+
+  const data = await client.sendTransacEmail(sendSmtpEmail);
+  return { success: true, messageId: data.body?.messageId || data.messageId };
+};
 
 /**
  * Send password reset email
@@ -22,16 +39,13 @@ const FROM_EMAIL = process.env.EMAIL_FROM || 'SDASP <onboarding@resend.dev>';
  */
 const sendPasswordResetEmail = async (email, resetToken, userName = 'User') => {
   try {
-    const client = getResend();
-    if (!client) return { success: false, error: 'Email service not configured' };
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     const resetLink = `${frontendUrl}/reset-password?token=${resetToken}`;
 
-    const { data, error } = await client.emails.send({
-      from: FROM_EMAIL,
-      to: email,
-      subject: 'Password Reset Request - SDASP',
-      html: `
+    const result = await sendEmail(
+      email,
+      'Password Reset Request - SDASP',
+      `
         <!DOCTYPE html>
         <html>
         <head>
@@ -74,7 +88,7 @@ const sendPasswordResetEmail = async (email, resetToken, userName = 'User') => {
         </body>
         </html>
       `,
-      text: `
+      `
         Hello ${userName},
         
         We received a request to reset your password for your SDASP account.
@@ -86,12 +100,11 @@ const sendPasswordResetEmail = async (email, resetToken, userName = 'User') => {
         
         Best regards,
         SDASP Team
-      `,
-    });
+      `
+    );
 
-    if (error) throw new Error(error.message);
-    console.log('Password reset email sent:', data.id);
-    return { success: true, messageId: data.id };
+    console.log('Password reset email sent:', result.messageId);
+    return result;
   } catch (error) {
     console.error('Error sending password reset email:', error);
     throw error;
@@ -105,13 +118,10 @@ const sendPasswordResetEmail = async (email, resetToken, userName = 'User') => {
  */
 const sendPasswordResetSuccessEmail = async (email, userName = 'User') => {
   try {
-    const client = getResend();
-    if (!client) return { success: false, error: 'Email service not configured' };
-    const { data, error } = await client.emails.send({
-      from: FROM_EMAIL,
-      to: email,
-      subject: 'Password Reset Successful - SDASP',
-      html: `
+    const result = await sendEmail(
+      email,
+      'Password Reset Successful - SDASP',
+      `
         <!DOCTYPE html>
         <html>
         <head>
@@ -140,7 +150,7 @@ const sendPasswordResetSuccessEmail = async (email, userName = 'User') => {
         </body>
         </html>
       `,
-      text: `
+      `
         Hello ${userName},
         
         Your password has been successfully reset.
@@ -149,12 +159,11 @@ const sendPasswordResetSuccessEmail = async (email, userName = 'User') => {
         
         Best regards,
         SDASP Team
-      `,
-    });
+      `
+    );
 
-    if (error) throw new Error(error.message);
-    console.log('Password reset success email sent:', data.id);
-    return { success: true, messageId: data.id };
+    console.log('Password reset success email sent:', result.messageId);
+    return result;
   } catch (error) {
     console.error('Error sending password reset success email:', error);
     // Don't throw error for success email - it's not critical
@@ -170,16 +179,13 @@ const sendPasswordResetSuccessEmail = async (email, userName = 'User') => {
  */
 const sendVerificationEmail = async (email, verificationToken, userName = 'User') => {
   try {
-    const client = getResend();
-    if (!client) return { success: false, error: 'Email service not configured' };
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     const verifyLink = `${frontendUrl}/verify-email?token=${verificationToken}`;
 
-    const { data, error } = await client.emails.send({
-      from: FROM_EMAIL,
-      to: email,
-      subject: 'Verify Your Email - SDASP',
-      html: `
+    const result = await sendEmail(
+      email,
+      'Verify Your Email - SDASP',
+      `
         <!DOCTYPE html>
         <html>
         <head>
@@ -220,7 +226,7 @@ const sendVerificationEmail = async (email, verificationToken, userName = 'User'
         </body>
         </html>
       `,
-      text: `
+      `
         Hello ${userName},
         
         Thank you for registering with SDASP! Please verify your email address.
@@ -232,12 +238,11 @@ const sendVerificationEmail = async (email, verificationToken, userName = 'User'
         
         Best regards,
         SDASP Team
-      `,
-    });
+      `
+    );
 
-    if (error) throw new Error(error.message);
-    console.log('Verification email sent:', data.id);
-    return { success: true, messageId: data.id };
+    console.log('Verification email sent:', result.messageId);
+    return result;
   } catch (error) {
     console.error('Error sending verification email:', error);
     throw error;
