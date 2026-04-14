@@ -1,34 +1,32 @@
-﻿const brevo = require('@getbrevo/brevo');
+﻿const { BrevoClient } = require('@getbrevo/brevo');
 
-let apiInstance;
+let client;
 const getBrevoClient = () => {
-  if (!apiInstance) {
+  if (!client) {
     if (!process.env.BREVO_API_KEY) {
       console.warn('⚠️ BREVO_API_KEY not set — emails will not be sent');
       return null;
     }
-    apiInstance = new brevo.TransactionalEmailsApi();
-    apiInstance.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+    client = new BrevoClient({ apiKey: process.env.BREVO_API_KEY });
   }
-  return apiInstance;
+  return client;
 };
 
 const SENDER_NAME = 'SDASP';
 const SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || 'darshanchelani007@gmail.com';
 
 const sendEmail = async (to, subject, html, text) => {
-  const client = getBrevoClient();
-  if (!client) return { success: false, error: 'Email service not configured' };
+  const brevoClient = getBrevoClient();
+  if (!brevoClient) return { success: false, error: 'Email service not configured' };
 
-  const sendSmtpEmail = new brevo.SendSmtpEmail();
-  sendSmtpEmail.sender = { name: SENDER_NAME, email: SENDER_EMAIL };
-  sendSmtpEmail.to = [{ email: to }];
-  sendSmtpEmail.subject = subject;
-  sendSmtpEmail.htmlContent = html;
-  sendSmtpEmail.textContent = text;
-
-  const data = await client.sendTransacEmail(sendSmtpEmail);
-  return { success: true, messageId: data.body?.messageId || data.messageId };
+  const data = await brevoClient.transactionalEmails.sendTransacEmail({
+    sender: { name: SENDER_NAME, email: SENDER_EMAIL },
+    to: [{ email: to }],
+    subject,
+    htmlContent: html,
+    textContent: text,
+  });
+  return { success: true, messageId: data.messageId };
 };
 
 /**
