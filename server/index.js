@@ -39,9 +39,18 @@ process.on('uncaughtException', (error) => {
 // SERVE STATIC CLIENT BUILD IN PRODUCTION
 // (before security middleware so assets load without Helmet headers)
 // ========================================
-const clientBuildPath = path.join(__dirname, '..', 'client', 'dist');
+const clientBuildPath = path.resolve(__dirname, '..', 'client', 'dist');
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(clientBuildPath));
+  console.log('📂 Static files path:', clientBuildPath);
+  console.log('📂 Path exists:', fs.existsSync(clientBuildPath));
+  if (fs.existsSync(clientBuildPath)) {
+    const files = fs.readdirSync(clientBuildPath);
+    console.log('📂 dist contents:', files);
+    if (fs.existsSync(path.join(clientBuildPath, 'assets'))) {
+      console.log('📂 assets contents:', fs.readdirSync(path.join(clientBuildPath, 'assets')));
+    }
+  }
+  app.use(express.static(clientBuildPath, { maxAge: '1h', etag: true }));
 }
 
 // ========================================
@@ -136,9 +145,14 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// SPA fallback — all non-API routes serve the React app
+// SPA fallback — all non-API, non-file routes serve the React app
 if (process.env.NODE_ENV === 'production') {
   app.get('*', (req, res) => {
+    // If the request looks like a file (has extension), return 404
+    // so the browser doesn't parse index.html as JS/CSS
+    if (path.extname(req.path)) {
+      return res.status(404).send('Not found');
+    }
     res.sendFile(path.join(clientBuildPath, 'index.html'));
   });
 }
