@@ -1,20 +1,8 @@
-﻿const nodemailer = require('nodemailer');
+﻿const { Resend } = require('resend');
 
-// Create reusable transporter
-const createTransporter = () => {
-  // Use environment variables for email configuration
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-  return transporter;
-};
+const FROM_EMAIL = process.env.EMAIL_FROM || 'SDASP <onboarding@resend.dev>';
 
 /**
  * Send password reset email
@@ -24,12 +12,11 @@ const createTransporter = () => {
  */
 const sendPasswordResetEmail = async (email, resetToken, userName = 'User') => {
   try {
-    const transporter = createTransporter();
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     const resetLink = `${frontendUrl}/reset-password?token=${resetToken}`;
 
-    const mailOptions = {
-      from: `"SDASP" <${process.env.SMTP_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
       to: email,
       subject: 'Password Reset Request - SDASP',
       html: `
@@ -88,11 +75,11 @@ const sendPasswordResetEmail = async (email, resetToken, userName = 'User') => {
         Best regards,
         SDASP Team
       `,
-    };
+    });
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Password reset email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    if (error) throw new Error(error.message);
+    console.log('Password reset email sent:', data.id);
+    return { success: true, messageId: data.id };
   } catch (error) {
     console.error('Error sending password reset email:', error);
     throw error;
@@ -106,10 +93,8 @@ const sendPasswordResetEmail = async (email, resetToken, userName = 'User') => {
  */
 const sendPasswordResetSuccessEmail = async (email, userName = 'User') => {
   try {
-    const transporter = createTransporter();
-
-    const mailOptions = {
-      from: `"SDASP" <${process.env.SMTP_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
       to: email,
       subject: 'Password Reset Successful - SDASP',
       html: `
@@ -151,11 +136,11 @@ const sendPasswordResetSuccessEmail = async (email, userName = 'User') => {
         Best regards,
         SDASP Team
       `,
-    };
+    });
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Password reset success email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    if (error) throw new Error(error.message);
+    console.log('Password reset success email sent:', data.id);
+    return { success: true, messageId: data.id };
   } catch (error) {
     console.error('Error sending password reset success email:', error);
     // Don't throw error for success email - it's not critical
@@ -171,12 +156,11 @@ const sendPasswordResetSuccessEmail = async (email, userName = 'User') => {
  */
 const sendVerificationEmail = async (email, verificationToken, userName = 'User') => {
   try {
-    const transporter = createTransporter();
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     const verifyLink = `${frontendUrl}/verify-email?token=${verificationToken}`;
 
-    const mailOptions = {
-      from: `"SDASP" <${process.env.SMTP_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
       to: email,
       subject: 'Verify Your Email - SDASP',
       html: `
@@ -233,11 +217,11 @@ const sendVerificationEmail = async (email, verificationToken, userName = 'User'
         Best regards,
         SDASP Team
       `,
-    };
+    });
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Verification email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    if (error) throw new Error(error.message);
+    console.log('Verification email sent:', data.id);
+    return { success: true, messageId: data.id };
   } catch (error) {
     console.error('Error sending verification email:', error);
     throw error;
