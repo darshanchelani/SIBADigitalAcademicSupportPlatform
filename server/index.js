@@ -46,23 +46,23 @@ app.use(
 );
 app.use(compression());
 
-// CORS — restrict to known origins
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',')
-  : ['http://localhost:5173'];
-if (process.env.FRONTEND_URL && !allowedOrigins.includes(process.env.FRONTEND_URL)) {
-  allowedOrigins.push(process.env.FRONTEND_URL);
+// CORS — In production (same-origin), allow all; in dev, restrict to known origins
+if (process.env.NODE_ENV === 'production') {
+  app.use(cors());
+} else {
+  const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',')
+    : ['http://localhost:5173'];
+  app.use(
+    cors({
+      origin: (origin, cb) => {
+        if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+        cb(new Error('Not allowed by CORS'));
+      },
+      credentials: true,
+    })
+  );
 }
-app.use(
-  cors({
-    origin: (origin, cb) => {
-      // Allow same-origin requests (no origin header) and allowed origins
-      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-      cb(new Error('Not allowed by CORS'));
-    },
-    credentials: true,
-  })
-);
 
 // Global rate limiter — 100 requests per minute per IP
 app.use(
