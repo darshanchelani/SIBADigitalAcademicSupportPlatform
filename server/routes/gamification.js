@@ -1,6 +1,6 @@
 const express = require('express');
 const { User, Badge, UserBadge, Leaderboard } = require('../models');
-const { authenticate } = require('../middleware/auth');
+const { authenticate, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -88,7 +88,7 @@ router.get('/leaderboard', authenticate, async (req, res) => {
  * POST /api/gamification/update-leaderboard
  * Manually update leaderboard (optional, for admin use)
  */
-router.post('/update-leaderboard', authenticate, async (req, res) => {
+router.post('/update-leaderboard', authenticate, authorize('Admin'), async (req, res) => {
   try {
     // Get all users sorted by points
     const users = await User.find({})
@@ -124,7 +124,7 @@ router.post('/update-leaderboard', authenticate, async (req, res) => {
  * POST /api/gamification/award-badge
  * Award badge to user (Admin only, or automatic)
  */
-router.post('/award-badge', authenticate, async (req, res) => {
+router.post('/award-badge', authenticate, authorize('Admin'), async (req, res) => {
   try {
     const { userId, badgeId } = req.body;
 

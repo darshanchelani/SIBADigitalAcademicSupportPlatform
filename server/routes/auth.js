@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { body, validationResult } = require('express-validator');
+const rateLimit = require('express-rate-limit');
 const { User } = require('../models');
 const { authenticate } = require('../middleware/auth');
 const {
@@ -13,12 +14,30 @@ const {
 
 const router = express.Router();
 
+// Rate limiters for sensitive endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,
+  message: { message: 'Too many attempts, please try again after 15 minutes' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const emailLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 3,
+  message: { message: 'Too many email requests, please try again later' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 /**
  * POST /api/auth/register
  * Register a new student (only @iba-suk.edu.pk emails)
  */
 router.post(
   '/register',
+  authLimiter,
   [
     body('name').trim().notEmpty().withMessage('Name is required'),
     body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
@@ -146,6 +165,7 @@ router.post('/verify-email', async (req, res) => {
  */
 router.post(
   '/resend-verification',
+  emailLimiter,
   [body('email').isEmail().normalizeEmail().withMessage('Valid email is required')],
   async (req, res) => {
     try {
@@ -209,8 +229,10 @@ router.post(
       const { name, email, password, adminSecret } = req.body;
 
       // Verify admin secret
-      const validSecret = process.env.ADMIN_SECRET || 'admin-secret-key-change-in-production';
-      if (adminSecret !== validSecret) {
+      if (!process.env.ADMIN_SECRET) {
+        return res.status(500).json({ message: 'Server configuration error' });
+      }
+      if (adminSecret !== process.env.ADMIN_SECRET) {
         return res.status(403).json({ message: 'Invalid admin secret key' });
       }
 
@@ -234,11 +256,9 @@ router.post(
       await user.save();
 
       // Generate JWT
-      const jwtSecret = process.env.JWT_SECRET || 'dev-secret-change-in-production';
-      if (!process.env.JWT_SECRET) {
-        console.warn(
-          '⚠️  WARNING: Using default JWT_SECRET. Set JWT_SECRET in .env for production!'
-        );
+      const jwtSecret = process.env.JWT_SECRET;
+      if (!jwtSecret) {
+        return res.status(500).json({ message: 'Server configuration error' });
       }
       const token = jwt.sign({ userId: user._id }, jwtSecret, {
         expiresIn: process.env.JWT_EXPIRES_IN || '7d',
@@ -268,6 +288,7 @@ router.post(
  */
 router.post(
   '/login',
+  authLimiter,
   [
     body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
     body('password').notEmpty().withMessage('Password is required'),
@@ -304,11 +325,9 @@ router.post(
       }
 
       // Generate JWT
-      const jwtSecret = process.env.JWT_SECRET || 'dev-secret-change-in-production';
-      if (!process.env.JWT_SECRET) {
-        console.warn(
-          '⚠️  WARNING: Using default JWT_SECRET. Set JWT_SECRET in .env for production!'
-        );
+      const jwtSecret = process.env.JWT_SECRET;
+      if (!jwtSecret) {
+        return res.status(500).json({ message: 'Server configuration error' });
       }
       const token = jwt.sign({ userId: user._id }, jwtSecret, {
         expiresIn: process.env.JWT_EXPIRES_IN || '7d',
@@ -338,6 +357,7 @@ router.post(
  */
 router.post(
   '/forgot-password',
+  emailLimiter,
   [body('email').isEmail().normalizeEmail().withMessage('Valid email is required')],
   async (req, res) => {
     try {

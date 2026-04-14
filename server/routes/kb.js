@@ -20,9 +20,9 @@ router.get('/search', authenticate, async (req, res) => {
       filter.category = category.trim();
     }
 
-    // Text search - use regex for reliable search
+    // Text search - use escaped regex for safe search
     if (q && q.trim()) {
-      const searchTerm = q.trim();
+      const searchTerm = q.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       filter.$or = [
         { title: { $regex: searchTerm, $options: 'i' } },
         { content: { $regex: searchTerm, $options: 'i' } },

@@ -12,7 +12,10 @@ const authenticate = async (req, res, next) => {
       return res.status(401).json({ message: 'No token provided' });
     }
 
-    const jwtSecret = process.env.JWT_SECRET || 'dev-secret-change-in-production';
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      return res.status(500).json({ message: 'Server configuration error' });
+    }
     const decoded = jwt.verify(token, jwtSecret);
     const user = await User.findById(decoded.userId).select('-passwordHash');
 

@@ -1,10 +1,20 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
+const rateLimit = require('express-rate-limit');
 const { Quiz, QuizAttempt, User } = require('../models');
 const { authenticate, authorize } = require('../middleware/auth');
 
 const router = express.Router();
+
+// Rate limiter for quiz password verification
+const quizPasswordLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { message: 'Too many password attempts, please try again later' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 /**
  * POST /api/quizzes
@@ -118,6 +128,7 @@ router.get('/', authenticate, async (req, res) => {
 router.post(
   '/:id/verify-password',
   authenticate,
+  quizPasswordLimiter,
   [body('password').notEmpty().withMessage('Password is required')],
   async (req, res) => {
     try {
