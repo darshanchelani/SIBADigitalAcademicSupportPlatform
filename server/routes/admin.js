@@ -422,10 +422,7 @@ router.post(
  */
 router.patch(
   '/badges/:id',
-  [
-    body('name').optional().trim().notEmpty(),
-    body('description').optional().trim().notEmpty(),
-  ],
+  [body('name').optional().trim().notEmpty(), body('description').optional().trim().notEmpty()],
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -510,4 +507,3 @@ router.post(
 );
 
 module.exports = router;
-

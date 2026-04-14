@@ -91,10 +91,7 @@ router.get('/leaderboard', authenticate, async (req, res) => {
 router.post('/update-leaderboard', authenticate, authorize('Admin'), async (req, res) => {
   try {
     // Get all users sorted by points
-    const users = await User.find({})
-      .select('_id points')
-      .sort({ points: -1 })
-      .limit(100);
+    const users = await User.find({}).select('_id points').sort({ points: -1 }).limit(100);
 
     // Clear existing leaderboard
     await Leaderboard.deleteMany({});
@@ -149,4 +146,3 @@ router.post('/award-badge', authenticate, authorize('Admin'), async (req, res) =
 });
 
 module.exports = router;
-
