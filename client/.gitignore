@@ -30,11 +30,6 @@ coverage/
 # Vite timestamp cache files
 *.timestamp-*
 
-# Config files that are generated or local
-postcss.config.js
-tailwind.config.js
-vite.config.js
-
 # Lint / Formatter configs
 .eslintrc*
 .prettier*
