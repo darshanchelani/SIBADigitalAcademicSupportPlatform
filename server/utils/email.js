@@ -1,6 +1,16 @@
 ﻿const { Resend } = require('resend');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend;
+const getResend = () => {
+  if (!resend) {
+    if (!process.env.RESEND_API_KEY) {
+      console.warn('⚠️ RESEND_API_KEY not set — emails will not be sent');
+      return null;
+    }
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
+};
 
 const FROM_EMAIL = process.env.EMAIL_FROM || 'SDASP <onboarding@resend.dev>';
 
@@ -12,10 +22,12 @@ const FROM_EMAIL = process.env.EMAIL_FROM || 'SDASP <onboarding@resend.dev>';
  */
 const sendPasswordResetEmail = async (email, resetToken, userName = 'User') => {
   try {
+    const client = getResend();
+    if (!client) return { success: false, error: 'Email service not configured' };
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     const resetLink = `${frontendUrl}/reset-password?token=${resetToken}`;
 
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await client.emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: 'Password Reset Request - SDASP',
@@ -93,7 +105,9 @@ const sendPasswordResetEmail = async (email, resetToken, userName = 'User') => {
  */
 const sendPasswordResetSuccessEmail = async (email, userName = 'User') => {
   try {
-    const { data, error } = await resend.emails.send({
+    const client = getResend();
+    if (!client) return { success: false, error: 'Email service not configured' };
+    const { data, error } = await client.emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: 'Password Reset Successful - SDASP',
@@ -156,10 +170,12 @@ const sendPasswordResetSuccessEmail = async (email, userName = 'User') => {
  */
 const sendVerificationEmail = async (email, verificationToken, userName = 'User') => {
   try {
+    const client = getResend();
+    if (!client) return { success: false, error: 'Email service not configured' };
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     const verifyLink = `${frontendUrl}/verify-email?token=${verificationToken}`;
 
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await client.emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: 'Verify Your Email - SDASP',
