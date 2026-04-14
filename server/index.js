@@ -36,6 +36,15 @@ process.on('uncaughtException', (error) => {
 });
 
 // ========================================
+// SERVE STATIC CLIENT BUILD IN PRODUCTION
+// (before security middleware so assets load without Helmet headers)
+// ========================================
+const clientBuildPath = path.join(__dirname, '..', 'client', 'dist');
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(clientBuildPath));
+}
+
+// ========================================
 // SECURITY & PERFORMANCE MIDDLEWARE
 // ========================================
 app.use(
@@ -127,14 +136,8 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// ========================================
-// SERVE STATIC CLIENT BUILD IN PRODUCTION
-// ========================================
+// SPA fallback — all non-API routes serve the React app
 if (process.env.NODE_ENV === 'production') {
-  const clientBuildPath = path.join(__dirname, '..', 'client', 'dist');
-  app.use(express.static(clientBuildPath));
-
-  // All non-API routes serve the React app
   app.get('*', (req, res) => {
     res.sendFile(path.join(clientBuildPath, 'index.html'));
   });
