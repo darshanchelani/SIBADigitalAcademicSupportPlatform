@@ -462,6 +462,12 @@ function QuizManagement() {
                   {quiz.description && (
                     <p className="text-surface-500 text-sm mb-2">{quiz.description}</p>
                   )}
+                  {quiz.createdBy?.name && (
+                    <p className="text-xs text-surface-500 mb-2">
+                      Created by:{' '}
+                      <span className="font-medium text-surface-700">{quiz.createdBy.name}</span>
+                    </p>
+                  )}
                   <div className="flex flex-wrap items-center gap-2 text-sm">
                     <span className="badge-blue">{quiz.questions?.length || '?'} Questions</span>
                     <span className="badge-purple">{quiz.duration} min</span>

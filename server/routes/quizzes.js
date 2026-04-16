@@ -88,6 +88,7 @@ router.get('/', authenticate, async (req, res) => {
       // Moderators see all their quizzes
       const quizzes = await Quiz.find({ createdBy: req.user._id })
         .select('-password -questions.correctAnswer')
+        .populate('createdBy', 'name')
         .sort({ createdAt: -1 });
       return res.json(quizzes);
     }
@@ -98,6 +99,7 @@ router.get('/', authenticate, async (req, res) => {
       expiresAt: { $gt: now },
     })
       .select('-password -questions.correctAnswer')
+      .populate('createdBy', 'name')
       .sort({ createdAt: -1 });
 
     // Check which quizzes the user has already attempted

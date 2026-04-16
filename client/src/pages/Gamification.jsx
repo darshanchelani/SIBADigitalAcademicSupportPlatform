@@ -1,11 +1,13 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
 function Gamification() {
   const { user, updateUser } = useAuth();
+  const navigate = useNavigate();
   const [leaderboard, setLeaderboard] = useState([]);
   const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -114,7 +116,7 @@ function Gamification() {
       {badges.length > 0 && (
         <div className="card p-5 mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           <h2 className="section-title mb-4">Your Badges</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
             {badges.map((item, index) => (
               <div
                 key={index}
@@ -217,7 +219,21 @@ function Gamification() {
                         </span>
                       </td>
                       <td className="py-3 px-4 text-surface-900">
-                        {entry.userId?.name || 'Unknown User'}
+                        <span
+                          role="button"
+                          tabIndex={0}
+                          onClick={() =>
+                            entry.userId?._id && navigate(`/dashboard/user/${entry.userId._id}`)
+                          }
+                          onKeyDown={(e) =>
+                            e.key === 'Enter' &&
+                            entry.userId?._id &&
+                            navigate(`/dashboard/user/${entry.userId._id}`)
+                          }
+                          className="cursor-pointer hover:text-primary-600 hover:underline transition-colors"
+                        >
+                          {entry.userId?.name || 'Unknown User'}
+                        </span>
                         {isCurrentUser && (
                           <span className="ml-2 text-primary-600 text-sm">(You)</span>
                         )}

@@ -232,7 +232,18 @@ function ResponseView() {
         )}
         <div className="text-sm text-surface-400 pt-3 border-t border-surface-100">
           <p>
-            Posted by <span className="text-surface-600 font-medium">{query.userId?.name}</span>
+            Posted by{' '}
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={() => navigate(`/dashboard/user/${query.userId?._id}`)}
+              onKeyDown={(e) =>
+                e.key === 'Enter' && navigate(`/dashboard/user/${query.userId?._id}`)
+              }
+              className="text-surface-600 font-medium cursor-pointer hover:text-primary-600 hover:underline transition-colors"
+            >
+              {query.userId?.name}
+            </span>
           </p>
           <p>{new Date(query.timestamp).toLocaleString()}</p>
         </div>
@@ -448,7 +459,16 @@ function ResponseView() {
                   <div className="flex items-center justify-between mb-3">
                     <div>
                       <div className="flex items-center space-x-2">
-                        <p className="font-semibold text-surface-900">
+                        <p
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => navigate(`/dashboard/user/${response.moderatorId?._id}`)}
+                          onKeyDown={(e) =>
+                            e.key === 'Enter' &&
+                            navigate(`/dashboard/user/${response.moderatorId?._id}`)
+                          }
+                          className="font-semibold text-surface-900 cursor-pointer hover:text-primary-600 hover:underline transition-colors"
+                        >
                           {response.moderatorId?.name}
                         </p>
                         {isModerator ? (

@@ -1,8 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function Sidebar({ currentPath, userRole }) {
+function Sidebar({ currentPath, userRole, isOpen, onClose }) {
   const navigate = useNavigate();
+
+  const handleNavigate = (path) => {
+    navigate(path);
+    if (onClose) onClose();
+  };
 
   const menuItems = [
     {
@@ -185,31 +190,48 @@ function Sidebar({ currentPath, userRole }) {
   const filteredItems = menuItems.filter((item) => item.roles.includes(userRole));
 
   return (
-    <aside className="w-64 bg-white border-r border-surface-200 min-h-[calc(100vh-4rem)] shadow-sm">
-      <nav className="p-4 space-y-1">
-        {filteredItems.map((item) => (
-          <button
-            key={item.path}
-            onClick={() => navigate(item.path)}
-            className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-              currentPath === item.path
-                ? 'bg-primary-50 text-primary-700 shadow-sm'
-                : 'text-surface-600 hover:bg-surface-100 hover:text-surface-900'
-            }`}
-          >
-            <span
-              className={`${currentPath === item.path ? 'text-primary-600' : 'text-surface-400'}`}
+    <>
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div
+          role="presentation"
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+      <aside
+        className={`
+        fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] w-64 bg-white border-r border-surface-200 shadow-sm
+        transform transition-transform duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        lg:translate-x-0 lg:static lg:z-0
+      `}
+      >
+        <nav className="p-4 space-y-1 overflow-y-auto h-full">
+          {filteredItems.map((item) => (
+            <button
+              key={item.path}
+              onClick={() => handleNavigate(item.path)}
+              className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                currentPath === item.path
+                  ? 'bg-primary-50 text-primary-700 shadow-sm'
+                  : 'text-surface-600 hover:bg-surface-100 hover:text-surface-900'
+              }`}
             >
-              {item.icon}
-            </span>
-            <span>{item.label}</span>
-            {currentPath === item.path && (
-              <span className="ml-auto w-1.5 h-1.5 bg-primary-500 rounded-full"></span>
-            )}
-          </button>
-        ))}
-      </nav>
-    </aside>
+              <span
+                className={`${currentPath === item.path ? 'text-primary-600' : 'text-surface-400'}`}
+              >
+                {item.icon}
+              </span>
+              <span>{item.label}</span>
+              {currentPath === item.path && (
+                <span className="ml-auto w-1.5 h-1.5 bg-primary-500 rounded-full"></span>
+              )}
+            </button>
+          ))}
+        </nav>
+      </aside>
+    </>
   );
 }
 

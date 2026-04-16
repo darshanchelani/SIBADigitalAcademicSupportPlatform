@@ -1,6 +1,6 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
-const { User } = require('../models');
+const { User, UserBadge, QuizAttempt } = require('../models');
 const { authenticate } = require('../middleware/auth');
 const { uploadSingle } = require('../middleware/upload');
 const { uploadFile } = require('../utils/firebase');
@@ -34,7 +34,31 @@ router.get('/:id', authenticate, async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.json(user);
+
+    // Fetch badges
+    const userBadges = await UserBadge.find({ userId: req.params.id }).populate('badgeId');
+    const badges = userBadges.map((ub) => ({
+      name: ub.badgeId?.name,
+      description: ub.badgeId?.description,
+      awardedTime: ub.awardedTime,
+    }));
+
+    // Fetch quiz attempts
+    const quizAttempts = await QuizAttempt.find({ userId: req.params.id })
+      .populate('quizId', 'title')
+      .sort({ completedAt: -1 })
+      .limit(10);
+
+    res.json({
+      ...user.toObject(),
+      badges,
+      quizAttempts: quizAttempts.map((qa) => ({
+        quizTitle: qa.quizId?.title || 'Deleted Quiz',
+        score: qa.score,
+        totalQuestions: qa.totalQuestions,
+        completedAt: qa.completedAt,
+      })),
+    });
   } catch (error) {
     console.error('Get user profile error:', error);
     res.status(500).json({ message: 'Failed to fetch user profile', error: error.message });
@@ -50,7 +74,11 @@ router.patch(
   authenticate,
   [
     body('name').optional().trim().notEmpty().withMessage('Name cannot be empty'),
-    body('bio').optional().trim().isLength({ max: 500 }).withMessage('Bio must be less than 500 characters'),
+    body('bio')
+      .optional()
+      .trim()
+      .isLength({ max: 500 })
+      .withMessage('Bio must be less than 500 characters'),
   ],
   async (req, res) => {
     try {
@@ -148,7 +176,14 @@ router.delete('/picture', authenticate, async (req, res) => {
 router.post(
   '/skills',
   authenticate,
-  [body('skill').trim().notEmpty().withMessage('Skill is required').isLength({ max: 50 }).withMessage('Skill must be less than 50 characters')],
+  [
+    body('skill')
+      .trim()
+      .notEmpty()
+      .withMessage('Skill is required')
+      .isLength({ max: 50 })
+      .withMessage('Skill must be less than 50 characters'),
+  ],
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -208,4 +243,3 @@ router.delete('/skills/:skill', authenticate, async (req, res) => {
 });
 
 module.exports = router;
-

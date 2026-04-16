@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 
-function TopNav({ user, onLogout }) {
+function TopNav({ user, onLogout, onToggleSidebar }) {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [notifications, setNotifications] = useState([]);
@@ -91,26 +91,45 @@ function TopNav({ user, onLogout }) {
   };
 
   return (
-    <nav className="bg-white border-b border-surface-200 shadow-sm">
+    <nav className="bg-white border-b border-surface-200 shadow-sm sticky top-0 z-30">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div
-            className="flex items-center space-x-3 cursor-pointer"
-            onClick={() => navigate('/dashboard')}
-          >
-            <div className="w-9 h-9 bg-surface-800 rounded-lg flex items-center justify-center shadow-sm">
-              <img
-                src="/sukkur-iba-logo.png"
-                alt="Sukkur IBA University"
-                className="w-7 h-7 object-contain"
-              />
+          {/* Hamburger + Logo */}
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={onToggleSidebar}
+              className="lg:hidden p-2 text-surface-500 hover:text-surface-700 hover:bg-surface-100 rounded-xl transition-colors"
+              aria-label="Toggle sidebar"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
+            <div
+              className="flex items-center space-x-3 cursor-pointer"
+              onClick={() => navigate('/dashboard')}
+            >
+              <div className="w-9 h-9 bg-surface-800 rounded-lg flex items-center justify-center shadow-sm">
+                <img
+                  src="/sukkur-iba-logo.png"
+                  alt="Sukkur IBA University"
+                  className="w-7 h-7 object-contain"
+                />
+              </div>
+              <h1 className="text-lg font-bold text-surface-900 hidden sm:block">SDASP</h1>
             </div>
-            <h1 className="text-lg font-bold text-surface-900">SDASP</h1>
           </div>
 
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="flex-1 max-w-lg mx-8">
+          <form
+            onSubmit={handleSearch}
+            className="flex-1 max-w-lg mx-2 sm:mx-4 lg:mx-8 hidden sm:block"
+          >
             <div className="relative">
               <input
                 type="text"

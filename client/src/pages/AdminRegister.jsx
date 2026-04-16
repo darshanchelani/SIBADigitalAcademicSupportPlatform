@@ -13,29 +13,35 @@ function AdminRegister() {
     adminSecret: '',
   });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showSecret, setShowSecret] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFieldErrors((prev) => ({ ...prev, [e.target.name]: '' }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
+    const errors = {};
+    if (!formData.name.trim()) errors.name = 'Name is required';
+    if (!formData.email) errors.email = 'Email is required';
+    if (!formData.password) errors.password = 'Password is required';
+    else if (formData.password.length < 6)
+      errors.password = 'Password must be at least 6 characters';
+    if (!formData.confirmPassword) errors.confirmPassword = 'Please confirm your password';
+    else if (formData.password !== formData.confirmPassword)
+      errors.confirmPassword = 'Passwords do not match';
+    if (!formData.adminSecret) errors.adminSecret = 'Admin secret key is required';
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
-
-    if (formData.password.length < 6) {
-      toast.error('Password must be at least 6 characters');
-      return;
-    }
-
-    if (!formData.adminSecret) {
-      toast.error('Admin secret key is required');
-      return;
-    }
+    setFieldErrors({});
 
     setLoading(true);
     try {
@@ -107,9 +113,10 @@ function AdminRegister() {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="input-modern"
+                className={`input-modern ${fieldErrors.name ? '!border-red-500 !ring-red-500/30' : ''}`}
                 placeholder="Admin Name"
               />
+              {fieldErrors.name && <p className="mt-1 text-xs text-red-400">{fieldErrors.name}</p>}
             </div>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-surface-300 mb-1.5">
@@ -122,9 +129,12 @@ function AdminRegister() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="input-modern"
+                className={`input-modern ${fieldErrors.email ? '!border-red-500 !ring-red-500/30' : ''}`}
                 placeholder="admin@sdasp.com"
               />
+              {fieldErrors.email && (
+                <p className="mt-1 text-xs text-red-400">{fieldErrors.email}</p>
+              )}
             </div>
             <div>
               <label
@@ -133,17 +143,54 @@ function AdminRegister() {
               >
                 Password
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                minLength={6}
-                className="input-modern"
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  minLength={6}
+                  className={`input-modern !pr-11 ${fieldErrors.password ? '!border-red-500 !ring-red-500/30' : ''}`}
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                      />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                  )}
+                </button>
+              </div>
+              {fieldErrors.password && (
+                <p className="mt-1 text-xs text-red-400">{fieldErrors.password}</p>
+              )}
             </div>
             <div>
               <label
@@ -152,17 +199,54 @@ function AdminRegister() {
               >
                 Confirm Password
               </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-                minLength={6}
-                className="input-modern"
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  minLength={6}
+                  className={`input-modern !pr-11 ${fieldErrors.confirmPassword ? '!border-red-500 !ring-red-500/30' : ''}`}
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 transition-colors"
+                  tabIndex={-1}
+                >
+                  {showConfirmPassword ? (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                      />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                  )}
+                </button>
+              </div>
+              {fieldErrors.confirmPassword && (
+                <p className="mt-1 text-xs text-red-400">{fieldErrors.confirmPassword}</p>
+              )}
             </div>
             <div>
               <label
@@ -171,19 +255,57 @@ function AdminRegister() {
               >
                 Admin Secret Key
               </label>
-              <input
-                id="adminSecret"
-                name="adminSecret"
-                type="password"
-                value={formData.adminSecret}
-                onChange={handleChange}
-                required
-                className="input-modern !border-red-500/30 focus:!border-red-400/50"
-                placeholder="Enter admin secret key"
-              />
-              <p className="mt-1.5 text-xs text-surface-500">
-                Contact system administrator for the secret key
-              </p>
+              <div className="relative">
+                <input
+                  id="adminSecret"
+                  name="adminSecret"
+                  type={showSecret ? 'text' : 'password'}
+                  value={formData.adminSecret}
+                  onChange={handleChange}
+                  required
+                  className={`input-modern !pr-11 !border-red-500/30 focus:!border-red-400/50 ${fieldErrors.adminSecret ? '!border-red-500 !ring-red-500/30' : ''}`}
+                  placeholder="Enter admin secret key"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowSecret(!showSecret)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 transition-colors"
+                  tabIndex={-1}
+                >
+                  {showSecret ? (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                      />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                  )}
+                </button>
+              </div>
+              {fieldErrors.adminSecret ? (
+                <p className="mt-1 text-xs text-red-400">{fieldErrors.adminSecret}</p>
+              ) : (
+                <p className="mt-1.5 text-xs text-surface-500">
+                  Contact system administrator for the secret key
+                </p>
+              )}
             </div>
 
             <button

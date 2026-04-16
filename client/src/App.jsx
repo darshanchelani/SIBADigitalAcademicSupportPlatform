@@ -28,6 +28,7 @@ import Profile from './pages/Profile';
 import ErrorBoundary from './components/ErrorBoundary';
 import QuizManagement from './pages/QuizManagement';
 import StudentQuiz from './pages/StudentQuiz';
+import UserProfile from './pages/UserProfile';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
@@ -136,6 +137,14 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="user/:id"
+          element={
+            <ProtectedRoute>
+              <UserProfile />
             </ProtectedRoute>
           }
         />
