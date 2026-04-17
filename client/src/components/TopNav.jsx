@@ -1,7 +1,5 @@
-import React from 'react';
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 
 function TopNav({ user, onLogout, onToggleSidebar }) {
@@ -98,7 +96,7 @@ function TopNav({ user, onLogout, onToggleSidebar }) {
           <div className="flex items-center space-x-2">
             <button
               onClick={onToggleSidebar}
-              className="lg:hidden p-2 text-surface-500 hover:text-surface-700 hover:bg-surface-100 rounded-xl transition-colors"
+              className="lg:hidden p-2 text-surface-500 hover:text-surface-700 hover:bg-surface-100 rounded-lg transition-colors"
               aria-label="Toggle sidebar"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -110,19 +108,20 @@ function TopNav({ user, onLogout, onToggleSidebar }) {
                 />
               </svg>
             </button>
-            <div
-              className="flex items-center space-x-3 cursor-pointer"
+            <button
+              type="button"
+              className="flex items-center space-x-3 cursor-pointer bg-transparent border-none p-0"
               onClick={() => navigate('/dashboard')}
             >
-              <div className="w-9 h-9 bg-surface-800 rounded-lg flex items-center justify-center shadow-sm">
+              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm border border-surface-200">
                 <img
                   src="/sukkur-iba-logo.png"
                   alt="Sukkur IBA University"
-                  className="w-7 h-7 object-contain"
+                  className="w-9 h-9 object-contain"
                 />
               </div>
               <h1 className="text-lg font-bold text-surface-900 hidden sm:block">SDASP</h1>
-            </div>
+            </button>
           </div>
 
           {/* Search Bar */}
@@ -136,7 +135,7 @@ function TopNav({ user, onLogout, onToggleSidebar }) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search knowledge base..."
-                className="w-full px-4 py-2 pl-10 bg-surface-50 text-surface-900 border border-surface-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 placeholder:text-surface-400 text-sm transition-all duration-200"
+                className="w-full px-4 py-2 pl-10 bg-surface-50 text-surface-800 border border-surface-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-600 placeholder:text-surface-400 text-sm transition-all duration-200"
               />
               <svg
                 className="absolute left-3 top-2.5 h-5 w-5 text-surface-400"
@@ -160,7 +159,7 @@ function TopNav({ user, onLogout, onToggleSidebar }) {
               <div className="relative" ref={notifRef}>
                 <button
                   onClick={toggleNotifications}
-                  className="relative p-2 text-surface-500 hover:text-surface-700 hover:bg-surface-100 rounded-xl transition-colors"
+                  className="relative p-2 text-surface-500 hover:text-surface-700 hover:bg-surface-100 rounded-lg transition-colors"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -178,7 +177,7 @@ function TopNav({ user, onLogout, onToggleSidebar }) {
                 </button>
 
                 {showNotifications && (
-                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-surface-200 z-50 max-h-96 overflow-y-auto animate-fade-in-down">
+                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-surface-200 z-50 max-h-96 overflow-y-auto animate-fade-in-down">
                     <div className="flex justify-between items-center p-4 border-b border-surface-100">
                       <h3 className="font-semibold text-surface-900 text-sm">Notifications</h3>
                       {unreadCount > 0 && (
@@ -223,7 +222,7 @@ function TopNav({ user, onLogout, onToggleSidebar }) {
 
             <button
               onClick={() => navigate('/dashboard/profile')}
-              className="flex items-center space-x-2.5 hover:bg-surface-100 rounded-xl px-2 py-1.5 transition-colors"
+              className="flex items-center space-x-2.5 hover:bg-surface-100 rounded-lg px-2 py-1.5 transition-colors"
             >
               {user?.profilePicture ? (
                 <img
@@ -246,7 +245,7 @@ function TopNav({ user, onLogout, onToggleSidebar }) {
 
             <button
               onClick={onLogout}
-              className="p-2 text-surface-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+              className="p-2 text-surface-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
               title="Logout"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

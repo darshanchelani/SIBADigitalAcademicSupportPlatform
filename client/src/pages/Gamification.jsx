@@ -89,9 +89,9 @@ function Gamification() {
         </div>
         <div className="card p-5 animate-fade-in-up" style={{ animationDelay: '0.05s' }}>
           <div className="flex items-center space-x-3">
-            <div className="p-2.5 bg-purple-50 rounded-xl">
+            <div className="p-2.5 bg-primary-50 rounded-xl">
               <svg
-                className="w-6 h-6 text-purple-500"
+                className="w-6 h-6 text-primary-500"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -106,7 +106,7 @@ function Gamification() {
             </div>
             <div>
               <p className="text-sm text-surface-500">Badges Earned</p>
-              <p className="text-3xl font-bold text-purple-600">{badges.length}</p>
+              <p className="text-3xl font-bold text-primary-600">{badges.length}</p>
             </div>
           </div>
         </div>

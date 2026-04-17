@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -102,7 +101,7 @@ function AdminDashboard() {
             label: 'Total Responses',
             value: stats.totalResponses,
             sub: 'All responses',
-            color: 'purple',
+            color: 'primary',
             icon: 'M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z',
           },
         ].map((stat, i) => (
@@ -158,7 +157,7 @@ function AdminDashboard() {
             title: 'Badge Management',
             desc: 'Create badges and assign them to users',
             path: '/dashboard/admin/badges',
-            color: 'purple',
+            color: 'amber',
             icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
           },
           {

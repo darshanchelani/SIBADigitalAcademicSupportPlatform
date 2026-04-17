@@ -1,9 +1,9 @@
 {
-  "name": "SDASP",
-  "short_name": "SDASP",
-  "description": "SDASP Progressive Web App",
-  "theme_color": "#1e40af",
-  "background_color": "#ffffff",
+  "name": "SIBA LMS — Digital Academic Support",
+  "short_name": "SIBA LMS",
+  "description": "SIBA Digital Academic Support Platform — Learning Management System",
+  "theme_color": "#4338ca",
+  "background_color": "#F8F9FA",
   "display": "standalone",
   "start_url": "/",
   "icons": [

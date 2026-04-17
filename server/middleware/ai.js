@@ -2,10 +2,27 @@ const axios = require('axios');
 
 /**
  * Generate AI draft response using OpenAI or Gemini
+ * @param {string} queryText
+ * @param {string} queryCategory
+ * @param {string} [provider] - 'openai' | 'gemini' | undefined (auto)
  */
-async function generateAIDraft(queryText, queryCategory) {
+async function generateAIDraft(queryText, queryCategory, provider) {
   try {
-    // Try OpenAI first, fallback to Gemini
+    if (provider === 'openai') {
+      if (!process.env.OPENAI_API_KEY) {
+        throw new Error('OpenAI API key is not configured');
+      }
+      return await generateOpenAIDraft(queryText, queryCategory);
+    }
+
+    if (provider === 'gemini') {
+      if (!process.env.GEMINI_API_KEY) {
+        throw new Error('Gemini API key is not configured');
+      }
+      return await generateGeminiDraft(queryText, queryCategory);
+    }
+
+    // Auto: try OpenAI first, fallback to Gemini
     if (process.env.OPENAI_API_KEY) {
       return await generateOpenAIDraft(queryText, queryCategory);
     } else if (process.env.GEMINI_API_KEY) {

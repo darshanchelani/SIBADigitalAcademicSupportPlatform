@@ -212,10 +212,10 @@ function Sidebar({ currentPath, userRole, isOpen, onClose }) {
             <button
               key={item.path}
               onClick={() => handleNavigate(item.path)}
-              className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                 currentPath === item.path
-                  ? 'bg-primary-50 text-primary-700 shadow-sm'
-                  : 'text-surface-600 hover:bg-surface-100 hover:text-surface-900'
+                  ? 'bg-primary-50 text-primary-700 border-l-3 border-primary-600'
+                  : 'text-surface-600 hover:bg-surface-50 hover:text-surface-800'
               }`}
             >
               <span

@@ -66,7 +66,7 @@ function Analytics() {
       {
         label: 'Queries by Category',
         data: dashboardData.categoryUsage?.map((c) => c.count) || [],
-        backgroundColor: ['#6366f1', '#10b981', '#8b5cf6'],
+        backgroundColor: ['#4338ca', '#5a8072', '#818cf8'],
       },
     ],
   };

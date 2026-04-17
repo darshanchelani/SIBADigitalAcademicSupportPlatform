@@ -68,8 +68,8 @@ function AdminRegister() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-surface-900 via-surface-950 to-surface-900 relative overflow-hidden py-8">
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-20 -right-20 w-80 h-80 bg-red-500/8 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-20 -left-20 w-80 h-80 bg-purple-500/8 rounded-full blur-3xl animate-float animation-delay-2000"></div>
+        <div className="absolute top-20 -right-20 w-80 h-80 bg-primary-500/8 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-20 -left-20 w-80 h-80 bg-primary-400/8 rounded-full blur-3xl animate-float animation-delay-2000"></div>
       </div>
 
       <div className="relative z-10 w-full max-w-md mx-4 animate-fade-in-up">
@@ -90,11 +90,11 @@ function AdminRegister() {
 
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
           <div className="text-center mb-8">
-            <div className="w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg ring-1 ring-white/20">
+            <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg ring-1 ring-white/20">
               <img
                 src="/sukkur-iba-logo.png"
                 alt="Sukkur IBA University"
-                className="w-10 h-10 object-contain"
+                className="w-16 h-16 object-contain"
               />
             </div>
             <h1 className="text-2xl font-bold text-white mb-1">Admin Registration</h1>
@@ -263,7 +263,7 @@ function AdminRegister() {
                   value={formData.adminSecret}
                   onChange={handleChange}
                   required
-                  className={`input-modern !pr-11 !border-red-500/30 focus:!border-red-400/50 ${fieldErrors.adminSecret ? '!border-red-500 !ring-red-500/30' : ''}`}
+                  className={`input-modern !pr-11 !border-primary-500/30 focus:!border-primary-400/50 ${fieldErrors.adminSecret ? '!border-red-500 !ring-red-500/30' : ''}`}
                   placeholder="Enter admin secret key"
                 />
                 <button
@@ -311,7 +311,7 @@ function AdminRegister() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-red-500 to-purple-500 text-white rounded-xl font-semibold hover:from-red-400 hover:to-purple-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-red-500/20"
+              className="w-full py-3 bg-primary-700 text-white rounded-xl font-semibold hover:bg-primary-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
             >
               {loading ? 'Creating Account...' : 'Create Admin Account'}
             </button>

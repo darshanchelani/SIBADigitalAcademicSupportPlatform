@@ -235,7 +235,7 @@ function AdminUsers() {
                       {user.role !== 'Admin' && (
                         <button
                           onClick={() => handlePromoteToAdmin(user._id)}
-                          className="text-purple-600 hover:text-purple-800 font-medium"
+                          className="text-primary-600 hover:text-primary-800 font-medium"
                         >
                           Admin
                         </button>

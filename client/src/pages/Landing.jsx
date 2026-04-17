@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect, useRef } from 'react';
 
 function Landing() {
   const navigate = useNavigate();
@@ -80,7 +79,7 @@ function Landing() {
       ),
       title: 'Smart Queries',
       desc: 'Post text, voice, or video queries with AI-powered moderation for quality responses.',
-      color: 'from-primary-500 to-primary-600',
+      color: 'bg-primary-600',
     },
     {
       icon: (
@@ -95,7 +94,7 @@ function Landing() {
       ),
       title: 'Peer Collaboration',
       desc: 'Learn together, share knowledge with peers, and get expert moderator guidance.',
-      color: 'from-accent-500 to-accent-600',
+      color: 'bg-accent-600',
     },
     {
       icon: (
@@ -110,7 +109,7 @@ function Landing() {
       ),
       title: 'Earn & Compete',
       desc: 'Gain points, unlock badges, and climb the leaderboard as you contribute.',
-      color: 'from-purple-500 to-purple-600',
+      color: 'bg-amber-500',
     },
     {
       icon: (
@@ -125,18 +124,18 @@ function Landing() {
       ),
       title: 'Knowledge Base',
       desc: 'Search through resolved queries and build a growing academic knowledge repository.',
-      color: 'from-amber-500 to-amber-600',
+      color: 'bg-primary-500',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-surface-900 via-primary-950 to-surface-900 relative overflow-hidden flex flex-col">
+    <div className="min-h-screen bg-surface-900 relative overflow-hidden flex flex-col">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute top-60 right-20 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-float animation-delay-2000"></div>
+        <div className="absolute top-60 right-20 w-80 h-80 bg-primary-400/8 rounded-full blur-3xl animate-float animation-delay-2000"></div>
         <div className="absolute bottom-20 left-1/3 w-72 h-72 bg-accent-500/10 rounded-full blur-3xl animate-float animation-delay-4000"></div>
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.03)_1px,transparent_1px)] bg-[size:60px_60px]"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(67,56,202,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(67,56,202,0.03)_1px,transparent_1px)] bg-[size:60px_60px]"></div>
       </div>
 
       {/* Navigation */}
@@ -145,14 +144,13 @@ function Landing() {
           <div
             className={`relative transition-all duration-700 ease-out ${logoLoaded ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-50 -rotate-12'}`}
           >
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg animate-glow overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20">
+            <div className="w-12 h-12 rounded-lg overflow-hidden shadow-lg">
               <img
                 src="/sukkur-iba-logo.png"
                 alt="Sukkur IBA University"
-                className="w-10 h-10 object-contain drop-shadow-lg"
+                className="w-full h-full object-cover"
               />
             </div>
-            <div className="absolute -inset-1 rounded-xl border-2 border-primary-400/40 animate-pulse-soft pointer-events-none"></div>
           </div>
           <div
             className={`transition-all duration-500 delay-300 ${logoLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
@@ -203,9 +201,7 @@ function Landing() {
           >
             <span className="text-white">SIBA Digital Academic</span>
             <br />
-            <span className="bg-gradient-to-r from-primary-400 via-purple-400 to-accent-400 bg-clip-text text-transparent">
-              Support Platform
-            </span>
+            <span className="text-primary-400">Support Platform</span>
           </h1>
 
           <p
@@ -222,7 +218,7 @@ function Landing() {
           >
             <button
               onClick={() => navigate('/register')}
-              className="group px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-500 text-white text-lg font-semibold rounded-2xl shadow-xl shadow-primary-600/25 hover:shadow-primary-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+              className="group px-8 py-4 bg-primary-600 text-white text-lg font-semibold rounded-2xl shadow-lg hover:bg-primary-700 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
             >
               <span className="flex items-center space-x-2">
                 <span>Start for Free</span>
@@ -265,10 +261,7 @@ function Landing() {
               Why Choose Us
             </span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-white mt-3">
-              Powerful Features for{' '}
-              <span className="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
-                Academic Success
-              </span>
+              Powerful Features for <span className="text-primary-400">Academic Success</span>
             </h2>
             <p className="text-surface-400 mt-4 max-w-xl mx-auto">
               Our platform combines AI technology with peer collaboration to create the ultimate
@@ -289,7 +282,7 @@ function Landing() {
                 >
                   <div className="flex items-start space-x-4">
                     <div
-                      className={`w-12 h-12 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center text-white flex-shrink-0 transition-transform duration-300 ${activeFeature === i ? 'scale-110' : 'group-hover:scale-105'}`}
+                      className={`w-12 h-12 ${feature.color} rounded-xl flex items-center justify-center text-white flex-shrink-0 transition-transform duration-300 ${activeFeature === i ? 'scale-110' : 'group-hover:scale-105'}`}
                     >
                       {feature.icon}
                     </div>
@@ -308,7 +301,7 @@ function Landing() {
                   </div>
                   {activeFeature === i && (
                     <div className="mt-4 h-1 bg-white/10 rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-primary-400 to-accent-400 rounded-full animate-progress-bar"></div>
+                      <div className="h-full bg-primary-500 rounded-full animate-progress-bar"></div>
                     </div>
                   )}
                 </button>
@@ -319,7 +312,7 @@ function Landing() {
             <div
               className={`transition-all duration-700 delay-300 ${visibleSections['features-section'] ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}
             >
-              <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 overflow-hidden">
+              <div className="relative bg-white/8 backdrop-blur-sm border border-white/10 rounded-3xl p-8 overflow-hidden">
                 <div className="absolute top-0 right-0 w-40 h-40 bg-primary-500/20 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-0 left-0 w-32 h-32 bg-accent-500/20 rounded-full blur-3xl"></div>
                 <div className="relative z-10 space-y-4">
@@ -338,7 +331,7 @@ function Landing() {
                           <span className="px-2 py-1 bg-primary-500/20 text-primary-300 rounded text-xs">
                             Text
                           </span>
-                          <span className="px-2 py-1 bg-purple-500/20 text-purple-300 rounded text-xs">
+                          <span className="px-2 py-1 bg-primary-500/20 text-primary-300 rounded text-xs">
                             Voice
                           </span>
                           <span className="px-2 py-1 bg-accent-500/20 text-accent-300 rounded text-xs">
@@ -380,7 +373,7 @@ function Landing() {
                             className="flex items-center space-x-3 bg-white/10 rounded-xl p-3 border border-white/10"
                           >
                             <div
-                              className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold ${i === 0 ? 'bg-primary-500' : i === 1 ? 'bg-purple-500' : 'bg-accent-500'}`}
+                              className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold ${i === 0 ? 'bg-primary-500' : i === 1 ? 'bg-accent-500' : 'bg-accent-500'}`}
                             >
                               {name.charAt(0)}
                             </div>
@@ -403,7 +396,7 @@ function Landing() {
                   {activeFeature === 2 && (
                     <div className="animate-fade-in-up">
                       <div className="flex items-center justify-center mb-4">
-                        <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30">
+                        <div className="w-20 h-20 bg-amber-500 rounded-full flex items-center justify-center shadow-lg">
                           <svg
                             className="w-10 h-10 text-white"
                             fill="none"
@@ -483,7 +476,7 @@ function Landing() {
       <section
         id="stats-section"
         ref={(el) => (sectionRefs.current['stats-section'] = el)}
-        className="relative z-10 py-20 bg-gradient-to-b from-transparent via-primary-950/50 to-transparent"
+        className="relative z-10 py-20"
       >
         <div className="max-w-6xl mx-auto px-6 md:px-12">
           <div
@@ -493,10 +486,7 @@ function Landing() {
               Our University
             </span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-white mt-3">
-              Sukkur IBA University at a{' '}
-              <span className="bg-gradient-to-r from-accent-400 to-primary-400 bg-clip-text text-transparent">
-                Glance
-              </span>
+              Sukkur IBA University at a <span className="text-accent-400">Glance</span>
             </h2>
             <p className="text-surface-400 mt-4 max-w-xl mx-auto">
               A premier institution committed to quality education, merit-based admissions, and
@@ -518,7 +508,7 @@ function Landing() {
                 className="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-1"
               >
                 <span className="text-3xl mb-2 block">{stat.icon}</span>
-                <p className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
+                <p className="text-3xl md:text-4xl font-extrabold text-primary-400">
                   {stat.value}
                   {stat.suffix}
                 </p>
@@ -570,14 +560,11 @@ function Landing() {
           <div
             className={`text-center mb-14 transition-all duration-700 ${visibleSections['howit-section'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
           >
-            <span className="text-purple-400 text-sm font-semibold uppercase tracking-widest">
+            <span className="text-primary-400 text-sm font-semibold uppercase tracking-widest">
               Get Started
             </span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-white mt-3">
-              How It{' '}
-              <span className="bg-gradient-to-r from-purple-400 to-primary-400 bg-clip-text text-transparent">
-                Works
-              </span>
+              How It <span className="text-primary-400">Works</span>
             </h2>
           </div>
 
@@ -589,31 +576,31 @@ function Landing() {
                 step: '01',
                 title: 'Register',
                 desc: 'Create your free account with university email',
-                color: 'from-primary-500 to-primary-600',
+                color: 'bg-primary-600',
               },
               {
                 step: '02',
                 title: 'Post Query',
                 desc: 'Ask questions via text, voice, or video',
-                color: 'from-accent-500 to-accent-600',
+                color: 'bg-accent-600',
               },
               {
                 step: '03',
                 title: 'Get Answers',
                 desc: 'Receive peer and moderator responses',
-                color: 'from-purple-500 to-purple-600',
+                color: 'bg-primary-500',
               },
               {
                 step: '04',
                 title: 'Earn Points',
                 desc: 'Gain rewards and climb the leaderboard',
-                color: 'from-amber-500 to-amber-600',
+                color: 'bg-amber-500',
               },
             ].map((item, i) => (
               <div key={i} className="relative group">
                 <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-1 h-full">
                   <div
-                    className={`w-14 h-14 bg-gradient-to-br ${item.color} rounded-2xl flex items-center justify-center text-white text-xl font-bold mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                    className={`w-14 h-14 ${item.color} rounded-2xl flex items-center justify-center text-white text-xl font-bold mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}
                   >
                     {item.step}
                   </div>
@@ -652,7 +639,7 @@ function Landing() {
                 className="w-full"
               ></iframe>
             </div>
-            <div className="bg-gradient-to-br from-primary-600/20 to-accent-600/20 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
               <h3 className="text-2xl font-extrabold text-white mb-3">Ready to Get Started?</h3>
               <p className="text-surface-300 mb-6 leading-relaxed">
                 Join thousands of Sukkur IBA students already using the platform. Register now and
@@ -661,7 +648,7 @@ function Landing() {
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={() => navigate('/register')}
-                  className="px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-primary-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                  className="px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl shadow-lg hover:bg-primary-700 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                 >
                   Create Free Account
                 </button>
@@ -704,7 +691,7 @@ function Landing() {
                 <img
                   src="/sukkur-iba-logo.png"
                   alt="Sukkur IBA"
-                  className="w-10 h-10 object-contain"
+                  className="w-11 h-11 rounded-lg object-cover"
                 />
                 <div>
                   <span className="text-lg font-bold text-white leading-tight">SIBA Digital</span>
@@ -848,9 +835,9 @@ function Landing() {
                 </li>
                 <li>
                   <a href="tel:+92719220262" className="flex items-center space-x-2 group">
-                    <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center group-hover:bg-purple-500/30 transition-colors">
+                    <div className="w-8 h-8 rounded-lg bg-primary-500/20 flex items-center justify-center group-hover:bg-primary-500/30 transition-colors">
                       <svg
-                        className="w-4 h-4 text-purple-400"
+                        className="w-4 h-4 text-primary-400"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"

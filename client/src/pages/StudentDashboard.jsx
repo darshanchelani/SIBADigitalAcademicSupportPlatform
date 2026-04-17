@@ -65,8 +65,8 @@ function StudentDashboard() {
       {
         label: 'Count',
         data: [analytics.totalQueries, analytics.totalResponses],
-        backgroundColor: ['rgba(99, 102, 241, 0.7)', 'rgba(16, 185, 129, 0.7)'],
-        borderColor: ['rgb(99, 102, 241)', 'rgb(16, 185, 129)'],
+        backgroundColor: ['rgba(67, 56, 202, 0.7)', 'rgba(90, 128, 114, 0.7)'],
+        borderColor: ['rgb(67, 56, 202)', 'rgb(90, 128, 114)'],
         borderWidth: 1,
         borderRadius: 8,
       },
@@ -75,9 +75,9 @@ function StudentDashboard() {
 
   const categoryLabels = Object.keys(analytics.byCategory);
   const categoryColors = {
-    MRC: 'rgba(99, 102, 241, 0.7)',
-    PRC: 'rgba(16, 185, 129, 0.7)',
-    ERC: 'rgba(168, 85, 247, 0.7)',
+    MRC: 'rgba(67, 56, 202, 0.7)',
+    PRC: 'rgba(90, 128, 114, 0.7)',
+    ERC: 'rgba(129, 140, 248, 0.7)',
   };
   const doughnutData = {
     labels: categoryLabels,
@@ -97,9 +97,9 @@ function StudentDashboard() {
         label: 'Queries',
         data: Object.values(analytics.byStatus),
         backgroundColor: [
-          'rgba(99, 102, 241, 0.7)',
+          'rgba(67, 56, 202, 0.7)',
           'rgba(245, 158, 11, 0.7)',
-          'rgba(16, 185, 129, 0.7)',
+          'rgba(90, 128, 114, 0.7)',
           'rgba(148, 163, 184, 0.7)',
         ],
         borderWidth: 0,

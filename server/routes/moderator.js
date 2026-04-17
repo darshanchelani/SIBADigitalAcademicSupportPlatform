@@ -13,7 +13,7 @@ const router = express.Router();
 router.get('/queue', authenticate, authorize('Moderator', 'Admin'), async (req, res) => {
   try {
     const { type = 'all' } = req.query; // 'pending', 'active', or 'all'
-    
+
     let filter = {};
     if (type === 'pending') {
       filter = { moderationStatus: 'Pending' };
@@ -147,7 +147,7 @@ router.post(
  */
 router.post('/generate-draft', authenticate, authorize('Moderator', 'Admin'), async (req, res) => {
   try {
-    const { queryId } = req.body;
+    const { queryId, provider } = req.body;
 
     const query = await Query.findById(queryId);
     if (!query) {
@@ -155,7 +155,7 @@ router.post('/generate-draft', authenticate, authorize('Moderator', 'Admin'), as
     }
 
     const queryText = query.content || query.title;
-    const draft = await generateAIDraft(queryText, query.category);
+    const draft = await generateAIDraft(queryText, query.category, provider);
 
     res.json({
       queryId,
@@ -324,4 +324,3 @@ router.get('/stats', authenticate, authorize('Moderator', 'Admin'), async (req, 
 });
 
 module.exports = router;
-

@@ -81,11 +81,11 @@ function ResetPassword() {
 
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
           <div className="text-center mb-8">
-            <div className="w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg ring-1 ring-white/20">
+            <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg ring-1 ring-white/20">
               <img
                 src="/sukkur-iba-logo.png"
                 alt="Sukkur IBA University"
-                className="w-10 h-10 object-contain"
+                className="w-16 h-16 object-contain"
               />
             </div>
             <h1 className="text-2xl font-bold text-white mb-1">Reset Password</h1>

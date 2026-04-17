@@ -16,6 +16,7 @@ function ModeratorDashboard() {
   const [queueType, setQueueType] = useState('all'); // 'all', 'pending', 'active'
   const [rejectReason, setRejectReason] = useState('');
   const [rejectingQueryId, setRejectingQueryId] = useState(null);
+  const [aiProvider, setAiProvider] = useState('auto');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -129,10 +130,12 @@ function ModeratorDashboard() {
 
   const handleGenerateDraft = async (queryId) => {
     try {
-      const response = await axios.post('/moderator/generate-draft', { queryId });
+      const payload = { queryId };
+      if (aiProvider !== 'auto') payload.provider = aiProvider;
+      const response = await axios.post('/moderator/generate-draft', payload);
       navigate(`/dashboard/moderator/queue/${queryId}`, { state: { draft: response.data } });
     } catch (error) {
-      toast.error('Failed to generate draft');
+      toast.error(error.response?.data?.message || 'Failed to generate draft');
     }
   };
 
@@ -232,8 +235,8 @@ function ModeratorDashboard() {
           {
             label: 'Today',
             value: moderatorStats.todayResponses,
-            color: 'text-purple-600',
-            bg: 'bg-purple-50',
+            color: 'text-primary-600',
+            bg: 'bg-primary-50',
           },
         ].map((stat, i) => (
           <div
@@ -432,12 +435,23 @@ function ModeratorDashboard() {
                       >
                         Review
                       </button>
-                      <button
-                        onClick={() => handleGenerateDraft(query._id)}
-                        className="px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors text-sm font-medium"
-                      >
-                        AI Draft
-                      </button>
+                      <div className="flex items-center space-x-1">
+                        <select
+                          value={aiProvider}
+                          onChange={(e) => setAiProvider(e.target.value)}
+                          className="input-modern text-xs py-2 px-2 rounded-lg w-[85px]"
+                        >
+                          <option value="auto">Auto</option>
+                          <option value="openai">OpenAI</option>
+                          <option value="gemini">Gemini</option>
+                        </select>
+                        <button
+                          onClick={() => handleGenerateDraft(query._id)}
+                          className="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors text-sm font-medium whitespace-nowrap"
+                        >
+                          AI Draft
+                        </button>
+                      </div>
                       {query.status === 'Open' && (
                         <button
                           onClick={() => handleStatusChange(query._id, 'InProgress')}
