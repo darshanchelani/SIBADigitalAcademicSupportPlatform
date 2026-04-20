@@ -3,8 +3,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useConfirm } from '../components/ConfirmDialog';
 
 function AdminQueries() {
+  const confirm = useConfirm();
   const [queries, setQueries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ status: '', category: '', search: '' });
@@ -32,9 +34,13 @@ function AdminQueries() {
   };
 
   const handleDelete = async (queryId) => {
-    if (!window.confirm('Are you sure you want to delete this query?')) {
-      return;
-    }
+    const ok = await confirm({
+      title: 'Delete this query?',
+      message: 'The query and all of its responses and attachments will be removed permanently.',
+      confirmLabel: 'Delete query',
+      tone: 'danger',
+    });
+    if (!ok) return;
 
     try {
       await axios.delete(`/admin/queries/${queryId}`);

@@ -120,11 +120,12 @@ function Gamification() {
             {badges.map((item, index) => (
               <div
                 key={index}
-                className="border-2 border-yellow-300 rounded-2xl p-4 text-center bg-yellow-50/50"
+                className="border border-accent-200 rounded-xl p-4 text-center bg-accent-50"
               >
-                <div className="p-2.5 bg-yellow-100 rounded-xl w-fit mx-auto mb-2">
+                <div className="p-2.5 bg-accent-100 rounded-md w-fit mx-auto mb-2">
                   <svg
-                    className="w-6 h-6 text-yellow-500"
+                    className="w-6 h-6 text-accent-700"
+                    aria-hidden="true"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -202,15 +203,15 @@ function Gamification() {
                       <td className="py-3 px-4">
                         <span className="font-semibold">
                           {index === 0 ? (
-                            <span className="inline-flex items-center justify-center w-7 h-7 bg-yellow-100 text-yellow-700 rounded-full text-sm font-bold">
+                            <span className="inline-flex items-center justify-center w-7 h-7 bg-primary-200 text-primary-900 rounded-full text-sm font-bold">
                               1
                             </span>
                           ) : index === 1 ? (
-                            <span className="inline-flex items-center justify-center w-7 h-7 bg-gray-100 text-gray-600 rounded-full text-sm font-bold">
+                            <span className="inline-flex items-center justify-center w-7 h-7 bg-surface-200 text-surface-800 rounded-full text-sm font-bold">
                               2
                             </span>
                           ) : index === 2 ? (
-                            <span className="inline-flex items-center justify-center w-7 h-7 bg-orange-100 text-orange-700 rounded-full text-sm font-bold">
+                            <span className="inline-flex items-center justify-center w-7 h-7 bg-accent-200 text-accent-900 rounded-full text-sm font-bold">
                               3
                             </span>
                           ) : (

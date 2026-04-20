@@ -2,8 +2,10 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useConfirm } from '../components/ConfirmDialog';
 
 function AdminBadges() {
+  const confirm = useConfirm();
   const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -51,9 +53,13 @@ function AdminBadges() {
   };
 
   const handleDeleteBadge = async (badgeId) => {
-    if (!window.confirm('Are you sure you want to delete this badge?')) {
-      return;
-    }
+    const ok = await confirm({
+      title: 'Delete this badge?',
+      message: 'The badge and every award tied to it will be removed. This cannot be undone.',
+      confirmLabel: 'Delete badge',
+      tone: 'danger',
+    });
+    if (!ok) return;
 
     try {
       await axios.delete(`/admin/badges/${badgeId}`);
@@ -115,9 +121,10 @@ function AdminBadges() {
                 <h3 className="text-base font-bold text-surface-900 mb-1">{badge.name}</h3>
                 <p className="text-sm text-surface-500">{badge.description}</p>
               </div>
-              <div className="p-2.5 bg-yellow-50 rounded-xl">
+              <div className="p-2.5 bg-accent-50 rounded-md">
                 <svg
-                  className="w-6 h-6 text-yellow-500"
+                  className="w-6 h-6 text-accent-700"
+                  aria-hidden="true"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -151,8 +158,8 @@ function AdminBadges() {
 
       {/* Create Badge Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl animate-scale-in">
+        <div className="fixed inset-0 bg-surface-900/40 flex items-center justify-center z-50 animate-fade-in px-4">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-lift animate-fade-in">
             <h2 className="text-xl font-bold text-surface-900 mb-4">Create Badge</h2>
             <form onSubmit={handleCreateBadge} className="space-y-4">
               <div>
@@ -199,8 +206,8 @@ function AdminBadges() {
 
       {/* Assign Badge Modal */}
       {selectedBadge && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl animate-scale-in">
+        <div className="fixed inset-0 bg-surface-900/40 flex items-center justify-center z-50 animate-fade-in px-4">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-lift animate-fade-in">
             <h2 className="text-xl font-bold text-surface-900 mb-4">
               Assign: {selectedBadge.name}
             </h2>

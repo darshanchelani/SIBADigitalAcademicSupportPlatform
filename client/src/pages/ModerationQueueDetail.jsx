@@ -3,8 +3,10 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useConfirm } from '../components/ConfirmDialog';
 
 function ModerationQueueDetail() {
+  const confirm = useConfirm();
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -60,13 +62,13 @@ function ModerationQueueDetail() {
   };
 
   const handleCloseQuery = async () => {
-    if (
-      !window.confirm(
-        'Are you sure you want to close this query? This action can be undone by changing the status.'
-      )
-    ) {
-      return;
-    }
+    const ok = await confirm({
+      title: 'Close this query?',
+      message: 'The query will be marked as closed. You can reopen it later by changing its status.',
+      confirmLabel: 'Close query',
+      tone: 'primary',
+    });
+    if (!ok) return;
     try {
       await axios.post('/moderator/close-query', { queryId: id });
       toast.success('Query closed successfully');

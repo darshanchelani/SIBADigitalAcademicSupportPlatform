@@ -2,8 +2,10 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useConfirm } from '../components/ConfirmDialog';
 
 function AdminUsers() {
+  const confirm = useConfirm();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -33,13 +35,13 @@ function AdminUsers() {
   };
 
   const handlePromoteToAdmin = async (userId) => {
-    if (
-      !window.confirm(
-        'Are you sure you want to make this user an Admin? They will have full system access.'
-      )
-    ) {
-      return;
-    }
+    const ok = await confirm({
+      title: 'Promote to Admin?',
+      message: 'This user will gain full system access — including the ability to manage users, queries, and badges.',
+      confirmLabel: 'Promote to Admin',
+      tone: 'danger',
+    });
+    if (!ok) return;
     try {
       await axios.patch(`/admin/users/${userId}/role`, { role: 'Admin' });
       toast.success('User promoted to Admin');
@@ -70,11 +72,13 @@ function AdminUsers() {
   };
 
   const handleDeleteUser = async (userId) => {
-    if (
-      !window.confirm('Are you sure you want to delete this user? This action cannot be undone.')
-    ) {
-      return;
-    }
+    const ok = await confirm({
+      title: 'Delete this user?',
+      message: 'All of their queries, responses, and badges will be removed. This action cannot be undone.',
+      confirmLabel: 'Delete user',
+      tone: 'danger',
+    });
+    if (!ok) return;
 
     try {
       await axios.delete(`/admin/users/${userId}`);
@@ -94,15 +98,14 @@ function AdminUsers() {
   const handleSaveEdit = async () => {
     try {
       if (editForm.role !== selectedUser.role) {
-        // Warn if promoting to Admin
         if (editForm.role === 'Admin' && selectedUser.role !== 'Admin') {
-          if (
-            !window.confirm(
-              `Are you sure you want to make ${selectedUser.name} an Admin? They will have full system access.`
-            )
-          ) {
-            return;
-          }
+          const ok = await confirm({
+            title: `Promote ${selectedUser.name} to Admin?`,
+            message: 'This user will gain full system access — including the ability to manage users, queries, and badges.',
+            confirmLabel: 'Promote to Admin',
+            tone: 'danger',
+          });
+          if (!ok) return;
         }
         await axios.patch(`/admin/users/${selectedUser._id}/role`, { role: editForm.role });
       }
@@ -273,8 +276,8 @@ function AdminUsers() {
 
       {/* Edit Modal */}
       {showEditModal && selectedUser && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl animate-scale-in">
+        <div className="fixed inset-0 bg-surface-900/40 flex items-center justify-center z-50 animate-fade-in px-4">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-lift">
             <h2 className="text-xl font-bold text-surface-900 mb-4">Edit User</h2>
             <div className="space-y-4">
               <div>

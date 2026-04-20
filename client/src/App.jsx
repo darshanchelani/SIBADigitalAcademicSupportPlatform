@@ -29,6 +29,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import QuizManagement from './pages/QuizManagement';
 import StudentQuiz from './pages/StudentQuiz';
 import UserProfile from './pages/UserProfile';
+import { ConfirmProvider } from './components/ConfirmDialog';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
@@ -240,8 +241,10 @@ function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <AppRoutes />
-        <Toaster position="top-right" />
+        <ConfirmProvider>
+          <AppRoutes />
+          <Toaster position="top-right" />
+        </ConfirmProvider>
       </AuthProvider>
     </ErrorBoundary>
   );
