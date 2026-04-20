@@ -89,38 +89,36 @@ function TopNav({ user, onLogout, onToggleSidebar }) {
   };
 
   return (
-    <nav className="bg-white border-b border-surface-200 shadow-sm sticky top-0 z-30">
+    <nav className="bg-white border-b border-surface-200 sticky top-0 z-30">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Hamburger + Logo */}
           <div className="flex items-center space-x-2">
             <button
               onClick={onToggleSidebar}
-              className="lg:hidden p-2 text-surface-500 hover:text-surface-700 hover:bg-surface-100 rounded-lg transition-colors"
+              className="lg:hidden p-2 text-surface-500 hover:text-surface-700 hover:bg-surface-100 rounded-md transition-colors"
               aria-label="Toggle sidebar"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
             <button
               type="button"
-              className="flex items-center space-x-3 cursor-pointer bg-transparent border-none p-0"
+              className="flex items-center gap-3 cursor-pointer bg-transparent border-none p-0"
               onClick={() => navigate('/dashboard')}
+              aria-label="Go to dashboard"
             >
-              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm border border-surface-200">
-                <img
-                  src="/sukkur-iba-logo.png"
-                  alt="Sukkur IBA University"
-                  className="w-9 h-9 object-contain"
-                />
-              </div>
-              <h1 className="text-lg font-bold text-surface-900 hidden sm:block">SDASP</h1>
+              <img
+                src="/sukkur-iba-logo.png"
+                alt=""
+                aria-hidden="true"
+                className="w-9 h-9 object-contain rounded-md"
+              />
+              <span className="hidden sm:flex flex-col leading-tight text-left">
+                <span className="font-serif text-base font-semibold text-surface-900">SIBA</span>
+                <span className="text-[10px] text-surface-500 tracking-wide uppercase">Academic Support</span>
+              </span>
             </button>
           </div>
 
@@ -128,27 +126,26 @@ function TopNav({ user, onLogout, onToggleSidebar }) {
           <form
             onSubmit={handleSearch}
             className="flex-1 max-w-lg mx-2 sm:mx-4 lg:mx-8 hidden sm:block"
+            role="search"
           >
+            <label className="sr-only" htmlFor="topnav-search">Search knowledge base</label>
             <div className="relative">
               <input
-                type="text"
+                id="topnav-search"
+                type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search knowledge base..."
-                className="w-full px-4 py-2 pl-10 bg-surface-50 text-surface-800 border border-surface-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-600 placeholder:text-surface-400 text-sm transition-all duration-200"
+                placeholder="Search knowledge base…"
+                className="w-full px-4 py-2 pl-10 bg-surface-50 text-surface-800 border border-surface-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-600 placeholder:text-surface-400 text-sm"
               />
               <svg
                 className="absolute left-3 top-2.5 h-5 w-5 text-surface-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
           </form>
@@ -159,54 +156,50 @@ function TopNav({ user, onLogout, onToggleSidebar }) {
               <div className="relative" ref={notifRef}>
                 <button
                   onClick={toggleNotifications}
-                  className="relative p-2 text-surface-500 hover:text-surface-700 hover:bg-surface-100 rounded-lg transition-colors"
+                  className="relative p-2 text-surface-500 hover:text-surface-800 hover:bg-surface-100 rounded-md transition-colors"
+                  aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                    />
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                   </svg>
                   {unreadCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs rounded-full w-4.5 h-4.5 flex items-center justify-center text-[10px] font-bold min-w-[18px] h-[18px] animate-bounce-in">
+                    <span className="absolute -top-0.5 -right-0.5 bg-accent-600 text-white text-[10px] leading-none rounded-full flex items-center justify-center font-semibold min-w-[18px] h-[18px] px-1">
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   )}
                 </button>
 
                 {showNotifications && (
-                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-surface-200 z-50 max-h-96 overflow-y-auto animate-fade-in-down">
-                    <div className="flex justify-between items-center p-4 border-b border-surface-100">
-                      <h3 className="font-semibold text-surface-900 text-sm">Notifications</h3>
+                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lift border border-surface-200 z-50 max-h-96 overflow-y-auto animate-fade-in">
+                    <div className="flex justify-between items-center p-4 border-b border-surface-200">
+                      <h3 className="font-serif font-semibold text-surface-900 text-base">Notifications</h3>
                       {unreadCount > 0 && (
                         <button
                           onClick={markAllRead}
-                          className="text-xs text-primary-600 hover:text-primary-700 font-medium"
+                          className="text-xs text-primary-800 hover:text-primary-900 font-medium underline underline-offset-2"
                         >
                           Mark all read
                         </button>
                       )}
                     </div>
                     {notifications.length === 0 ? (
-                      <p className="p-6 text-sm text-surface-400 text-center">No notifications</p>
+                      <p className="p-6 text-sm text-surface-500 text-center">No notifications</p>
                     ) : (
                       notifications.map((notif) => (
                         <button
                           key={notif._id}
                           onClick={() => handleNotificationClick(notif)}
-                          className={`w-full text-left p-3.5 border-b border-surface-50 hover:bg-surface-50 transition-colors ${
-                            !notif.isRead ? 'bg-primary-50/50' : ''
+                          className={`w-full text-left p-3.5 border-b border-surface-100 last:border-0 hover:bg-surface-50 transition-colors ${
+                            !notif.isRead ? 'bg-primary-50' : ''
                           }`}
                         >
-                          <div className="flex items-start space-x-3">
+                          <div className="flex items-start gap-3">
                             {!notif.isRead && (
-                              <span className="w-2 h-2 bg-primary-500 rounded-full mt-1.5 flex-shrink-0"></span>
+                              <span className="w-2 h-2 bg-primary-600 rounded-full mt-1.5 flex-shrink-0" aria-hidden="true"></span>
                             )}
                             <div className={!notif.isRead ? '' : 'ml-5'}>
                               <p className="text-sm font-medium text-surface-900">{notif.title}</p>
-                              <p className="text-xs text-surface-500 mt-0.5">{notif.message}</p>
+                              <p className="text-xs text-surface-600 mt-0.5">{notif.message}</p>
                               <p className="text-xs text-surface-400 mt-1">
                                 {new Date(notif.createdAt).toLocaleString()}
                               </p>
@@ -222,39 +215,37 @@ function TopNav({ user, onLogout, onToggleSidebar }) {
 
             <button
               onClick={() => navigate('/dashboard/profile')}
-              className="flex items-center space-x-2.5 hover:bg-surface-100 rounded-lg px-2 py-1.5 transition-colors"
+              className="flex items-center gap-2.5 hover:bg-surface-100 rounded-md px-2 py-1.5 transition-colors"
+              aria-label="Open profile"
             >
               {user?.profilePicture ? (
                 <img
                   src={user.profilePicture}
-                  alt={user?.name}
-                  className="w-8 h-8 rounded-lg object-cover ring-2 ring-surface-200"
+                  alt=""
+                  aria-hidden="true"
+                  className="w-8 h-8 rounded-md object-cover border border-surface-200"
                 />
               ) : (
-                <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-lg flex items-center justify-center">
-                  <span className="text-sm font-semibold text-white">
+                <div className="w-8 h-8 bg-primary-200 rounded-md flex items-center justify-center border border-primary-300">
+                  <span className="text-sm font-semibold text-primary-900">
                     {user?.name?.charAt(0).toUpperCase() || 'U'}
                   </span>
                 </div>
               )}
               <div className="hidden md:block text-left">
-                <p className="text-sm font-medium text-surface-900">{user?.name}</p>
-                <p className="text-xs text-surface-400">{user?.role}</p>
+                <p className="text-sm font-medium text-surface-900 leading-tight">{user?.name}</p>
+                <p className="text-xs text-surface-500 leading-tight">{user?.role}</p>
               </div>
             </button>
 
             <button
               onClick={onLogout}
-              className="p-2 text-surface-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+              className="p-2 text-surface-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
+              aria-label="Logout"
               title="Logout"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
             </button>
           </div>
