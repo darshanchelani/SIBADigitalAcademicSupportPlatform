@@ -58,7 +58,7 @@ function AdminLogin() {
 
         <div className="card p-8 md:p-10">
           <div className="mb-8">
-            <img src="/sukkur-iba-logo.png" alt="" aria-hidden="true" className="w-12 h-12 mb-5" />
+            <img src="/sukkur-iba-logo.png" alt="" aria-hidden="true" className="w-12 h-12 mb-5 rounded-full ring-1 ring-surface-200 mx-auto" />
             <span className="eyebrow">Admin portal</span>
             <h1 className="font-serif text-3xl font-semibold text-surface-900 mt-2">
               Administrator sign in.
