@@ -81,10 +81,10 @@ function Landing() {
               src="/sukkur-iba-logo.png"
               alt=""
               aria-hidden="true"
-              className="w-9 h-9 object-contain"
+              className="w-9 h-9 object-contain rounded-full ring-1 ring-surface-200"
             />
             <div className="leading-tight">
-              <p className="font-serif text-lg font-semibold text-surface-900">SIBA</p>
+              <p className="font-serif text-lg font-semibold text-surface-900">SDASP</p>
               <p className="text-[10px] uppercase tracking-[0.18em] text-surface-500">
                 Academic Support
               </p>
@@ -116,7 +116,7 @@ function Landing() {
             <em className="font-serif italic text-primary-800">and learn together.</em>
           </h1>
           <p className="mt-7 text-lg text-surface-700 max-w-xl leading-relaxed">
-            SIBA Academic Support is the official query and knowledge platform for Sukkur IBA
+            SDASP is the official query and knowledge platform for Sukkur IBA
             students. Post questions in any format, get moderated answers, and build a shared
             knowledge base your whole cohort can draw from.
           </p>
@@ -279,10 +279,10 @@ function Landing() {
         <div className="max-w-6xl mx-auto px-6 md:px-10 py-12 grid grid-cols-1 md:grid-cols-4 gap-10">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <img src="/sukkur-iba-logo.png" alt="" aria-hidden="true" className="w-9 h-9" />
+              <img src="/sukkur-iba-logo.png" alt="" aria-hidden="true" className="w-9 h-9 rounded-full ring-1 ring-surface-200" />
               <div>
-                <p className="font-serif font-semibold text-surface-900">SIBA Academic Support</p>
-                <p className="text-xs text-surface-500">Sukkur IBA University</p>
+                <p className="font-serif font-semibold text-surface-900">SDASP</p>
+                <p className="text-xs text-surface-500">Sukkur IBA University Digital Academic Support Platform</p>
               </div>
             </div>
             <p className="text-sm text-surface-600 leading-relaxed">

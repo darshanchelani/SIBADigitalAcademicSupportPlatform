@@ -10,13 +10,24 @@ function Gamification() {
   const navigate = useNavigate();
   const [leaderboard, setLeaderboard] = useState([]);
   const [badges, setBadges] = useState([]);
+  const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchLeaderboard();
     fetchBadges();
     fetchUserPoints();
+    fetchCertificates();
   }, []);
+
+  const fetchCertificates = async () => {
+    try {
+      const response = await axios.get('/gamification/certificates');
+      setCertificates(response.data);
+    } catch (error) {
+      // silent — may not have certificates
+    }
+  };
 
   const fetchLeaderboard = async () => {
     try {
@@ -142,6 +153,62 @@ function Gamification() {
                 <p className="text-xs text-surface-500 mt-0.5">{item.badge?.description}</p>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Certificates */}
+      {certificates.length > 0 && (
+        <div className="card p-5 mb-6 animate-fade-in-up" style={{ animationDelay: '0.12s' }}>
+          <h2 className="section-title mb-4">Your Certificates</h2>
+          <div className="space-y-3">
+            {certificates.map((cert) => {
+              const shareUrl = `${window.location.origin}/api/gamification/certificate/${cert.certificateId}`;
+              return (
+                <div key={cert._id} className="border border-primary-200 rounded-xl p-5 bg-primary-50">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="font-serif text-lg font-semibold text-primary-900">{cert.title}</h3>
+                      <p className="text-sm text-surface-600 mt-1">{cert.description}</p>
+                      <p className="text-xs text-surface-400 mt-2">
+                        Issued: {new Date(cert.issuedAt).toLocaleDateString()}
+                        {cert.issuedBy?.name && ` by ${cert.issuedBy.name}`}
+                      </p>
+                    </div>
+                    <div className="flex gap-2 ml-4 flex-shrink-0">
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(shareUrl);
+                          toast.success('Certificate link copied!');
+                        }}
+                        className="btn-secondary !py-2 !px-3 text-xs"
+                        title="Copy shareable link"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                        Share
+                      </button>
+                      <button
+                        onClick={() => {
+                          const text = `🎉 I earned a Certificate of Appreciation from SDASP for responding to ${cert.responseCount}+ student queries!\n\nVerify: ${shareUrl}`;
+                          if (navigator.share) {
+                            navigator.share({ title: cert.title, text, url: shareUrl });
+                          } else {
+                            navigator.clipboard.writeText(text);
+                            toast.success('Share text copied to clipboard!');
+                          }
+                        }}
+                        className="btn-accent !py-2 !px-3 text-xs"
+                        title="Share to platforms"
+                      >
+                        Share to Platform
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

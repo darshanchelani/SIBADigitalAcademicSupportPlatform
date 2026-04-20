@@ -22,6 +22,10 @@ function StudentQuiz() {
   const timerRef = useRef(null);
   const timerStartedRef = useRef(false);
 
+  // Review state
+  const [reviewData, setReviewData] = useState(null);
+  const [reviewLoading, setReviewLoading] = useState(false);
+
   useEffect(() => {
     fetchQuizzes();
   }, []);
@@ -198,6 +202,18 @@ function StudentQuiz() {
     await handleAutoSubmit();
   };
 
+  const handleReviewQuiz = async (quizId) => {
+    setReviewLoading(true);
+    try {
+      const res = await axios.get(`/quizzes/${quizId}/preview`);
+      setReviewData(res.data);
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to load quiz review');
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -243,6 +259,75 @@ function StudentQuiz() {
             }}
             className="btn-primary mt-6"
           >
+            Back to Quizzes
+          </button>
+          <button
+            onClick={() => handleReviewQuiz(result.quizId || result._quizId)}
+            disabled={reviewLoading}
+            className="btn-secondary mt-3 ml-3"
+          >
+            {reviewLoading ? 'Loading...' : 'Review Answers'}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show review view
+  if (reviewData) {
+    return (
+      <div className="animate-fade-in-up max-w-4xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-surface-900">{reviewData.quizTitle}</h1>
+            <p className="text-surface-500 text-sm mt-1">
+              Score: <span className="font-semibold text-primary-700">{reviewData.score}/{reviewData.totalQuestions}</span>
+              {' '}({reviewData.percentage}%)
+            </p>
+          </div>
+          <button onClick={() => setReviewData(null)} className="btn-secondary">
+            Back
+          </button>
+        </div>
+        <div className="space-y-4">
+          {reviewData.questions.map((q, i) => (
+            <div key={q._id || i} className={`card p-5 border-l-4 ${q.isCorrect ? 'border-l-green-500' : 'border-l-red-500'}`}>
+              <div className="flex items-start gap-3 mb-3">
+                <span className={`badge ${q.isCorrect ? 'badge-green' : 'badge-red'}`}>Q{i + 1}</span>
+                <p className="text-surface-800 font-medium">{q.question}</p>
+              </div>
+              <div className="space-y-2 ml-8">
+                {q.options.map((opt, oIndex) => {
+                  const isUserAnswer = q.userAnswer === oIndex;
+                  const isCorrect = q.correctAnswer === oIndex;
+                  let classes = 'border bg-surface-50 border-surface-200';
+                  if (isCorrect) classes = 'border-2 bg-green-50 border-green-400';
+                  else if (isUserAnswer && !isCorrect) classes = 'border-2 bg-red-50 border-red-400';
+                  return (
+                    <div key={oIndex} className={`flex items-center gap-3 p-3 rounded-xl ${classes}`}>
+                      {isCorrect && (
+                        <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                      {isUserAnswer && !isCorrect && (
+                        <svg className="w-5 h-5 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      )}
+                      {!isCorrect && !isUserAnswer && <span className="w-5 h-5 flex-shrink-0" />}
+                      <span className={`text-sm ${isCorrect ? 'text-green-800 font-medium' : isUserAnswer ? 'text-red-800 font-medium' : 'text-surface-700'}`}>
+                        {opt}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-6 text-center">
+          <button onClick={() => setReviewData(null)} className="btn-primary">
             Back to Quizzes
           </button>
         </div>
@@ -421,6 +506,13 @@ function StudentQuiz() {
                         Score: {quiz.score}/{quiz.totalQuestions}
                       </span>
                       <p className="text-xs text-surface-400 mt-1">Completed</p>
+                      <button
+                        onClick={() => handleReviewQuiz(quiz._id)}
+                        disabled={reviewLoading}
+                        className="btn-ghost text-xs mt-1 !py-1 !px-2 text-primary-700"
+                      >
+                        Review
+                      </button>
                     </div>
                   ) : selectedQuizId === quiz._id ? (
                     <div className="flex items-center space-x-2">

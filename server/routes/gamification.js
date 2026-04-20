@@ -1,5 +1,6 @@
 const express = require('express');
-const { User, Badge, UserBadge, Leaderboard } = require('../models');
+const { User, Badge, UserBadge, Leaderboard, Certificate, Response, Notification } = require('../models');
+const crypto = require('crypto');
 const { authenticate, authorize } = require('../middleware/auth');
 
 const router = express.Router();
@@ -142,6 +143,126 @@ router.post('/award-badge', authenticate, authorize('Admin'), async (req, res) =
   } catch (error) {
     console.error('Award badge error:', error);
     res.status(500).json({ message: 'Failed to award badge', error: error.message });
+  }
+});
+
+/**
+ * GET /api/gamification/certificates
+ * Get certificates for current user
+ */
+router.get('/certificates', authenticate, async (req, res) => {
+  try {
+    const certificates = await Certificate.find({ userId: req.user._id })
+      .populate('issuedBy', 'name')
+      .sort({ issuedAt: -1 });
+    res.json(certificates);
+  } catch (error) {
+    console.error('Get certificates error:', error);
+    res.status(500).json({ message: 'Failed to fetch certificates', error: error.message });
+  }
+});
+
+/**
+ * GET /api/gamification/certificate/:certificateId
+ * Get a single certificate by its unique certificateId (public, for sharing/verification)
+ */
+router.get('/certificate/:certificateId', async (req, res) => {
+  try {
+    const certificate = await Certificate.findOne({ certificateId: req.params.certificateId })
+      .populate('userId', 'name email')
+      .populate('issuedBy', 'name');
+    if (!certificate) {
+      return res.status(404).json({ message: 'Certificate not found' });
+    }
+    res.json(certificate);
+  } catch (error) {
+    console.error('Get certificate error:', error);
+    res.status(500).json({ message: 'Failed to fetch certificate', error: error.message });
+  }
+});
+
+/**
+ * POST /api/gamification/award-certificate
+ * Admin awards certificate to a moderator who has responded to 50+ queries
+ */
+router.post('/award-certificate', authenticate, authorize('Admin'), async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    const targetUser = await User.findById(userId);
+    if (!targetUser || targetUser.role !== 'Moderator') {
+      return res.status(400).json({ message: 'User must be a moderator' });
+    }
+
+    // Count responses by this moderator
+    const responseCount = await Response.countDocuments({ moderatorId: userId });
+    if (responseCount < 50) {
+      return res.status(400).json({
+        message: `Moderator has only ${responseCount} responses. Minimum 50 required.`,
+      });
+    }
+
+    // Check if already awarded
+    const existing = await Certificate.findOne({ userId, type: 'ModeratorAppreciation' });
+    if (existing) {
+      return res.status(400).json({ message: 'Certificate already awarded to this moderator' });
+    }
+
+    const certificate = new Certificate({
+      userId,
+      type: 'ModeratorAppreciation',
+      title: 'Certificate of Appreciation',
+      description: `Awarded for outstanding contribution by responding to ${responseCount} student queries on the SDASP platform.`,
+      responseCount,
+      issuedBy: req.user._id,
+      certificateId: crypto.randomBytes(16).toString('hex'),
+    });
+
+    await certificate.save();
+
+    // Notify the moderator
+    await new Notification({
+      userId,
+      type: 'Certificate',
+      title: 'Certificate Awarded!',
+      message: 'You have been awarded a Certificate of Appreciation for your outstanding contributions!',
+    }).save();
+
+    const populated = await Certificate.findById(certificate._id)
+      .populate('userId', 'name email')
+      .populate('issuedBy', 'name');
+
+    res.status(201).json(populated);
+  } catch (error) {
+    console.error('Award certificate error:', error);
+    res.status(500).json({ message: 'Failed to award certificate', error: error.message });
+  }
+});
+
+/**
+ * GET /api/gamification/eligible-moderators
+ * Get moderators eligible for certificate (50+ responses, not yet awarded)
+ */
+router.get('/eligible-moderators', authenticate, authorize('Admin'), async (req, res) => {
+  try {
+    const moderators = await User.find({ role: 'Moderator' }).select('name email').lean();
+
+    const eligibleList = [];
+    for (const mod of moderators) {
+      const responseCount = await Response.countDocuments({ moderatorId: mod._id });
+      const hasCertificate = await Certificate.findOne({ userId: mod._id, type: 'ModeratorAppreciation' });
+      eligibleList.push({
+        ...mod,
+        responseCount,
+        eligible: responseCount >= 50,
+        certificateAwarded: !!hasCertificate,
+      });
+    }
+
+    res.json(eligibleList);
+  } catch (error) {
+    console.error('Get eligible moderators error:', error);
+    res.status(500).json({ message: 'Failed to fetch eligible moderators', error: error.message });
   }
 });
 

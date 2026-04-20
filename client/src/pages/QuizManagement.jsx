@@ -12,6 +12,8 @@ function QuizManagement() {
   const [showResults, setShowResults] = useState(null);
   const [results, setResults] = useState(null);
   const [creating, setCreating] = useState(false);
+  const [reviewData, setReviewData] = useState(null);
+  const [reviewLoading, setReviewLoading] = useState(false);
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -157,10 +159,87 @@ function QuizManagement() {
     }
   };
 
+  const handlePreviewAttempt = async (quizId, userId) => {
+    setReviewLoading(true);
+    try {
+      const res = await axios.get(`/quizzes/${quizId}/preview${userId ? `?userId=${userId}` : ''}`);
+      setReviewData(res.data);
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to load preview');
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-10 w-10 border-2 border-primary-500 border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  // Show review view for a specific attempt
+  if (reviewData) {
+    return (
+      <div className="animate-fade-in-up max-w-4xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-surface-900">{reviewData.quizTitle}</h1>
+            {reviewData.student && (
+              <p className="text-surface-500 text-sm mt-1">
+                Student: <span className="font-medium text-surface-700">{reviewData.student.name}</span>
+                {' — '}Score: <span className="font-semibold text-primary-700">{reviewData.score}/{reviewData.totalQuestions}</span>
+                {' '}({reviewData.percentage}%)
+              </p>
+            )}
+          </div>
+          <button onClick={() => setReviewData(null)} className="btn-secondary">
+            Back to Results
+          </button>
+        </div>
+        <div className="space-y-4">
+          {reviewData.questions.map((q, i) => (
+            <div key={q._id || i} className={`card p-5 border-l-4 ${q.isCorrect ? 'border-l-green-500' : 'border-l-red-500'}`}>
+              <div className="flex items-start gap-3 mb-3">
+                <span className={`badge ${q.isCorrect ? 'badge-green' : 'badge-red'}`}>Q{i + 1}</span>
+                <p className="text-surface-800 font-medium">{q.question}</p>
+              </div>
+              <div className="space-y-2 ml-8">
+                {q.options.map((opt, oIndex) => {
+                  const isUserAnswer = q.userAnswer === oIndex;
+                  const isCorrect = q.correctAnswer === oIndex;
+                  let classes = 'border bg-surface-50 border-surface-200';
+                  if (isCorrect) classes = 'border-2 bg-green-50 border-green-400';
+                  else if (isUserAnswer && !isCorrect) classes = 'border-2 bg-red-50 border-red-400';
+                  return (
+                    <div key={oIndex} className={`flex items-center gap-3 p-3 rounded-xl ${classes}`}>
+                      {isCorrect && (
+                        <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                      {isUserAnswer && !isCorrect && (
+                        <svg className="w-5 h-5 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      )}
+                      {!isCorrect && !isUserAnswer && <span className="w-5 h-5 flex-shrink-0" />}
+                      <span className={`text-sm ${isCorrect ? 'text-green-800 font-medium' : isUserAnswer ? 'text-red-800 font-medium' : 'text-surface-700'}`}>
+                        {opt}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-6 text-center">
+          <button onClick={() => setReviewData(null)} className="btn-primary">
+            Back to Results
+          </button>
+        </div>
       </div>
     );
   }
@@ -403,6 +482,9 @@ function QuizManagement() {
                     <th className="text-left py-3 px-2 text-surface-600 font-semibold">
                       Completed
                     </th>
+                    <th className="text-left py-3 px-2 text-surface-600 font-semibold">
+                      Preview
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -425,6 +507,15 @@ function QuizManagement() {
                       </td>
                       <td className="py-3 px-2 text-surface-500 text-xs">
                         {a.completedAt ? new Date(a.completedAt).toLocaleString() : '-'}
+                      </td>
+                      <td className="py-3 px-2">
+                        <button
+                          onClick={() => handlePreviewAttempt(showResults, a.userId?._id)}
+                          disabled={reviewLoading}
+                          className="btn-ghost text-xs !py-1 !px-2 text-primary-700"
+                        >
+                          View
+                        </button>
                       </td>
                     </tr>
                   ))}

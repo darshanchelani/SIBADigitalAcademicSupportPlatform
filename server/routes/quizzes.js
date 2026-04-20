@@ -2,7 +2,7 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const rateLimit = require('express-rate-limit');
-const { Quiz, QuizAttempt, User } = require('../models');
+const { Quiz, QuizAttempt, User, Notification } = require('../models');
 const { authenticate, authorize } = require('../middleware/auth');
 
 const router = express.Router();
@@ -64,6 +64,24 @@ router.post(
       });
 
       await quiz.save();
+
+      // Notify all users about the new quiz
+      try {
+        const allUsers = await User.find({ _id: { $ne: req.user._id } }).select('_id');
+        if (allUsers.length > 0) {
+          const notifications = allUsers.map((u) => ({
+            userId: u._id,
+            type: 'NewQuiz',
+            title: 'New Quiz Available',
+            message: `A new quiz "${title}" has been scheduled. Don't miss it!`,
+            relatedQuiz: quiz._id,
+          }));
+          await Notification.insertMany(notifications);
+        }
+      } catch (notifError) {
+        console.error('Quiz notification error:', notifError);
+        // Don't fail the quiz creation if notification fails
+      }
 
       res.status(201).json({
         message: 'Quiz created successfully',
@@ -244,6 +262,7 @@ router.post(
 
       res.json({
         message: 'Quiz submitted successfully',
+        quizId: quiz._id,
         score,
         totalQuestions: quiz.questions.length,
         percentage: Math.round((score / quiz.questions.length) * 100),
@@ -298,6 +317,68 @@ router.get('/:id/results', authenticate, authorize('Moderator', 'Admin'), async 
   } catch (error) {
     console.error('Get quiz results error:', error);
     res.status(500).json({ message: 'Failed to fetch results', error: error.message });
+  }
+});
+
+/**
+ * GET /api/quizzes/:id/preview
+ * Preview a completed quiz attempt — shows questions, user answers, and correct answers.
+ * Students can only preview their own attempt; creators and admins can preview any attempt.
+ */
+router.get('/:id/preview', authenticate, async (req, res) => {
+  try {
+    const quiz = await Quiz.findById(req.params.id);
+    if (!quiz) {
+      return res.status(404).json({ message: 'Quiz not found' });
+    }
+
+    const { userId } = req.query;
+    const isCreatorOrAdmin =
+      req.user.role === 'Admin' || quiz.createdBy.toString() === req.user._id.toString();
+
+    // Determine which attempt to load
+    const targetUserId = isCreatorOrAdmin && userId ? userId : req.user._id;
+
+    const attempt = await QuizAttempt.findOne({
+      quizId: quiz._id,
+      userId: targetUserId,
+    }).populate('userId', 'name email');
+
+    if (!attempt) {
+      return res.status(404).json({ message: 'No attempt found for this quiz' });
+    }
+
+    // Only the attempt owner or the quiz creator/admin can view
+    if (
+      attempt.userId._id.toString() !== req.user._id.toString() &&
+      !isCreatorOrAdmin
+    ) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    // Build preview with correct answers
+    const questions = quiz.questions.map((q, i) => ({
+      _id: q._id,
+      question: q.question,
+      options: q.options,
+      correctAnswer: q.correctAnswer,
+      userAnswer: attempt.answers[i] != null ? attempt.answers[i] : -1,
+      isCorrect: attempt.answers[i] === q.correctAnswer,
+    }));
+
+    res.json({
+      quizTitle: quiz.title,
+      quizDescription: quiz.description,
+      student: attempt.userId,
+      score: attempt.score,
+      totalQuestions: attempt.totalQuestions,
+      percentage: Math.round((attempt.score / attempt.totalQuestions) * 100),
+      completedAt: attempt.completedAt,
+      questions,
+    });
+  } catch (error) {
+    console.error('Quiz preview error:', error);
+    res.status(500).json({ message: 'Failed to load quiz preview', error: error.message });
   }
 });
 

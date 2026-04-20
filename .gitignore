@@ -38,3 +38,5 @@ vite.config.js
 # Lint / Formatter configs
 .eslintrc*
 .prettier*
+README.md.bak
+details.md
