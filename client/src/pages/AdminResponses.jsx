@@ -3,8 +3,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useConfirm } from '../components/ConfirmDialog';
 
 function AdminResponses() {
+  const confirm = useConfirm();
   const [responses, setResponses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ queryId: '', responseType: '' });
@@ -31,9 +33,13 @@ function AdminResponses() {
   };
 
   const handleDelete = async (responseId) => {
-    if (!window.confirm('Are you sure you want to delete this response?')) {
-      return;
-    }
+    const ok = await confirm({
+      title: 'Delete this response?',
+      message: 'The response will be removed from the associated query. This cannot be undone.',
+      confirmLabel: 'Delete response',
+      tone: 'danger',
+    });
+    if (!ok) return;
 
     try {
       await axios.delete(`/admin/responses/${responseId}`);

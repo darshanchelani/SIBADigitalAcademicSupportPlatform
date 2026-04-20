@@ -4,8 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
+import { useConfirm } from '../components/ConfirmDialog';
 
 function Profile() {
+  const confirm = useConfirm();
   const { user: authUser, updateUser } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
@@ -103,9 +105,13 @@ function Profile() {
   };
 
   const handleRemovePicture = async () => {
-    if (!window.confirm('Are you sure you want to remove your profile picture?')) {
-      return;
-    }
+    const ok = await confirm({
+      title: 'Remove profile picture?',
+      message: 'Your photo will be replaced with an initials avatar. You can upload a new one any time.',
+      confirmLabel: 'Remove picture',
+      tone: 'danger',
+    });
+    if (!ok) return;
 
     try {
       const response = await axios.delete('/profile/picture');
@@ -194,11 +200,11 @@ function Profile() {
                   <img
                     src={profile.profilePicture}
                     alt={profile.name}
-                    className="w-32 h-32 rounded-full object-cover border-4 border-primary-500 shadow-md"
+                    className="w-32 h-32 rounded-full object-cover border border-surface-200 shadow-sm"
                   />
                 ) : (
-                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center border-4 border-primary-300 shadow-md">
-                    <span className="text-4xl font-bold text-white">
+                  <div className="w-32 h-32 rounded-full bg-primary-100 flex items-center justify-center border border-primary-300">
+                    <span className="font-serif text-4xl font-semibold text-primary-900">
                       {profile.name?.charAt(0)?.toUpperCase() || 'U'}
                     </span>
                   </div>
@@ -241,7 +247,7 @@ function Profile() {
                 </button>
               )}
               {uploadingPicture && (
-                <p className="mt-2 text-sm text-surface-400 animate-pulse-soft">Uploading...</p>
+                <p className="mt-2 text-sm text-surface-500">Uploading…</p>
               )}
             </div>
 

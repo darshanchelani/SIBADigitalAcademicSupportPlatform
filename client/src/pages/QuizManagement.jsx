@@ -2,8 +2,10 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useConfirm } from '../components/ConfirmDialog';
 
 function QuizManagement() {
+  const confirm = useConfirm();
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
@@ -129,7 +131,13 @@ function QuizManagement() {
   };
 
   const handleDeleteQuiz = async (id) => {
-    if (!window.confirm('Delete this quiz and all attempts?')) return;
+    const ok = await confirm({
+      title: 'Delete this quiz?',
+      message: 'The quiz and every student attempt on it will be removed. This cannot be undone.',
+      confirmLabel: 'Delete quiz',
+      tone: 'danger',
+    });
+    if (!ok) return;
     try {
       await axios.delete(`/quizzes/${id}`);
       toast.success('Quiz deleted');

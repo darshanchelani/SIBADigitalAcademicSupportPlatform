@@ -3,8 +3,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useConfirm } from '../components/ConfirmDialog';
 
 function ModeratorDashboard() {
+  const confirm = useConfirm();
   const [queue, setQueue] = useState([]);
   const [filteredQueue, setFilteredQueue] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -116,9 +118,13 @@ function ModeratorDashboard() {
   };
 
   const handleCloseQuery = async (queryId) => {
-    if (!window.confirm('Are you sure you want to close this query?')) {
-      return;
-    }
+    const ok = await confirm({
+      title: 'Close this query?',
+      message: 'The query will be marked as closed. You can reopen it later by changing its status.',
+      confirmLabel: 'Close query',
+      tone: 'primary',
+    });
+    if (!ok) return;
     try {
       await axios.post('/moderator/close-query', { queryId });
       toast.success('Query closed successfully');
@@ -150,8 +156,15 @@ function ModeratorDashboard() {
   };
 
   const handleRejectQuery = async (queryId) => {
-    if (!rejectReason.trim() && !window.confirm('Reject without providing a reason?')) {
-      return;
+    if (!rejectReason.trim()) {
+      const ok = await confirm({
+        title: 'Reject without a reason?',
+        message: 'The student will not see any explanation for the rejection. Consider adding a short reason first.',
+        confirmLabel: 'Reject anyway',
+        cancelLabel: 'Add reason',
+        tone: 'danger',
+      });
+      if (!ok) return;
     }
     try {
       await axios.post('/moderator/reject-query', {
@@ -212,30 +225,30 @@ function ModeratorDashboard() {
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
         {[
-          { label: 'Pending', value: stats.pending, color: 'text-red-600', bg: 'bg-red-50' },
+          { label: 'Pending', value: stats.pending, color: 'text-red-700', bg: 'bg-red-50' },
           {
             label: 'Active',
             value: stats.total - stats.pending,
-            color: 'text-primary-600',
+            color: 'text-primary-800',
             bg: 'bg-primary-50',
           },
-          { label: 'Open', value: stats.open, color: 'text-yellow-600', bg: 'bg-yellow-50' },
+          { label: 'Open', value: stats.open, color: 'text-accent-800', bg: 'bg-accent-50' },
           {
             label: 'In Progress',
             value: stats.inProgress,
-            color: 'text-orange-600',
-            bg: 'bg-orange-50',
+            color: 'text-accent-700',
+            bg: 'bg-accent-50',
           },
           {
             label: 'My Responses',
             value: moderatorStats.myResponses,
-            color: 'text-accent-600',
-            bg: 'bg-accent-50',
+            color: 'text-primary-800',
+            bg: 'bg-primary-50',
           },
           {
             label: 'Today',
             value: moderatorStats.todayResponses,
-            color: 'text-primary-600',
+            color: 'text-primary-800',
             bg: 'bg-primary-50',
           },
         ].map((stat, i) => (
@@ -455,7 +468,7 @@ function ModeratorDashboard() {
                       {query.status === 'Open' && (
                         <button
                           onClick={() => handleStatusChange(query._id, 'InProgress')}
-                          className="px-4 py-2 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition-colors text-sm font-medium"
+                          className="px-4 py-2 bg-accent-600 text-white rounded-md hover:bg-accent-700 transition-colors text-sm font-medium"
                         >
                           In Progress
                         </button>
@@ -479,8 +492,8 @@ function ModeratorDashboard() {
 
       {/* Reject Reason Modal */}
       {rejectingQueryId && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl animate-scale-in">
+        <div className="fixed inset-0 bg-surface-900/40 flex items-center justify-center z-50 animate-fade-in px-4">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-lift">
             <h2 className="text-xl font-bold text-surface-900 mb-4">Reject Query</h2>
             <div className="mb-5">
               <label className="block text-sm font-medium text-surface-700 mb-1.5">

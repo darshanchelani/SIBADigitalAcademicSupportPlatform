@@ -2,8 +2,10 @@ import React from 'react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useConfirm } from '../components/ConfirmDialog';
 
 function StudentQuiz() {
+  const confirm = useConfirm();
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [passwordInput, setPasswordInput] = useState('');
@@ -184,7 +186,14 @@ function StudentQuiz() {
   const handleSubmit = async () => {
     const unanswered = answers.filter((a) => a === -1).length;
     if (unanswered > 0) {
-      if (!window.confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`)) return;
+      const ok = await confirm({
+        title: 'Submit with unanswered questions?',
+        message: `You still have ${unanswered} unanswered question${unanswered === 1 ? '' : 's'}. Unanswered questions count as incorrect.`,
+        confirmLabel: 'Submit anyway',
+        cancelLabel: 'Keep answering',
+        tone: 'danger',
+      });
+      if (!ok) return;
     }
     await handleAutoSubmit();
   };
@@ -208,8 +217,8 @@ function StudentQuiz() {
     return (
       <div className="animate-fade-in-up max-w-lg mx-auto mt-12">
         <div className="card p-8 text-center">
-          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
-            <span className="text-3xl font-bold text-white">{result.percentage}%</span>
+          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary-100 border border-primary-300 flex items-center justify-center">
+            <span className="font-serif text-2xl font-semibold text-primary-900">{result.percentage}%</span>
           </div>
           <h2 className="text-2xl font-bold text-surface-900 mb-2">Quiz Completed!</h2>
           <p className="text-surface-500 mb-4">
@@ -278,11 +287,11 @@ function StudentQuiz() {
         )}
 
         {/* Header with timer */}
-        <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-sm border-b border-surface-200 p-4 mb-6 rounded-b-xl shadow-sm">
+        <div className="sticky top-0 z-20 bg-white border-b border-surface-200 p-4 mb-6 shadow-soft">
           <div className="flex justify-between items-center max-w-4xl mx-auto">
             <h2 className="text-lg font-bold text-surface-900">{activeQuiz.title}</h2>
             <div
-              className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-mono text-lg font-bold ${timeLeft <= 60 ? 'bg-red-100 text-red-600 animate-pulse-soft' : 'bg-primary-50 text-primary-700'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md font-mono text-lg font-semibold tabular-nums ${timeLeft <= 60 ? 'bg-red-100 text-red-800 animate-pulse' : 'bg-primary-100 text-primary-900'}`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
