@@ -1,9 +1,9 @@
 {
-  "name": "SIBA LMS — Digital Academic Support",
-  "short_name": "SIBA LMS",
-  "description": "SIBA Digital Academic Support Platform — Learning Management System",
-  "theme_color": "#4338ca",
-  "background_color": "#F8F9FA",
+  "name": "SIBA Digital Academic Support",
+  "short_name": "SIBA DASP",
+  "description": "SIBA Digital Academic Support Platform",
+  "theme_color": "#FEFAE0",
+  "background_color": "#FEFAE0",
   "display": "standalone",
   "start_url": "/",
   "icons": [
