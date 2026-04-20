@@ -78,11 +78,11 @@ function UserProfile() {
             <img
               src={profile.profilePicture}
               alt={profile.name}
-              className="w-28 h-28 rounded-full object-cover border-4 border-primary-500 shadow-md flex-shrink-0"
+              className="w-28 h-28 rounded-full object-cover border border-surface-200 shadow-sm flex-shrink-0"
             />
           ) : (
-            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center border-4 border-primary-300 shadow-md flex-shrink-0">
-              <span className="text-3xl font-bold text-white">
+            <div className="w-28 h-28 rounded-full bg-primary-100 flex items-center justify-center border border-primary-300 flex-shrink-0">
+              <span className="font-serif text-3xl font-semibold text-primary-900">
                 {profile.name?.charAt(0)?.toUpperCase() || 'U'}
               </span>
             </div>
@@ -138,11 +138,11 @@ function UserProfile() {
               {profile.badges.map((badge, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-3 p-3 bg-amber-50 rounded-lg border border-amber-100"
+                  className="flex items-center gap-3 p-3 bg-accent-50 rounded-md border border-accent-200"
                 >
-                  <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 bg-accent-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <svg
-                      className="w-5 h-5 text-amber-600"
+                      className="w-5 h-5 text-accent-700"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"

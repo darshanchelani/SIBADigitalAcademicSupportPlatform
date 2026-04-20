@@ -137,45 +137,20 @@ function StudentDashboard() {
       {/* Analytics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
-          {
-            label: 'Total Queries',
-            value: analytics.totalQueries,
-            color: 'from-primary-500 to-primary-600',
-            icon: '❓',
-          },
-          {
-            label: 'Responded',
-            value: analytics.totalResponses,
-            color: 'from-accent-500 to-accent-600',
-            icon: '✅',
-          },
-          {
-            label: 'Open',
-            value: analytics.byStatus.Open || 0,
-            color: 'from-amber-500 to-amber-600',
-            icon: '📂',
-          },
-          {
-            label: 'Resolved',
-            value: analytics.byStatus.Resolved || 0,
-            color: 'from-green-500 to-green-600',
-            icon: '🎯',
-          },
+          { label: 'Total queries', value: analytics.totalQueries, accent: '#6D7A52' },
+          { label: 'Responded', value: analytics.totalResponses, accent: '#A6B37D' },
+          { label: 'Open', value: analytics.byStatus.Open || 0, accent: '#B99470' },
+          { label: 'Resolved', value: analytics.byStatus.Resolved || 0, accent: '#535D3E' },
         ].map((stat, i) => (
           <div
             key={i}
-            className="card p-5 animate-fade-in-up"
-            style={{ animationDelay: `${i * 0.05}s` }}
+            className="stat-card animate-fade-in-up"
+            style={{ animationDelay: `${i * 0.05}s`, '--stat-accent': stat.accent }}
           >
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-2xl">{stat.icon}</span>
-              <span
-                className={`text-2xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}
-              >
-                {stat.value}
-              </span>
-            </div>
-            <p className="text-sm text-surface-500">{stat.label}</p>
+            <p className="text-sm text-surface-600">{stat.label}</p>
+            <p className="font-serif text-3xl md:text-4xl font-semibold text-surface-900 mt-2 tabular-nums">
+              {stat.value}
+            </p>
           </div>
         ))}
       </div>
