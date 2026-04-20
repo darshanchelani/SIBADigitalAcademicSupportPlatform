@@ -12,7 +12,6 @@ function ForgotPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       await axios.post('/auth/forgot-password', { email });
       setSubmitted(true);
@@ -26,98 +25,74 @@ function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-surface-900 via-primary-950 to-surface-900 relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-20 -left-20 w-80 h-80 bg-primary-500/10 rounded-full blur-3xl animate-float"></div>
-      </div>
-
-      <div className="relative z-10 w-full max-w-md mx-4 animate-fade-in-up">
+    <div className="min-h-screen flex items-center justify-center bg-surface-50 px-4 py-10">
+      <div className="w-full max-w-md animate-fade-in-up">
         <Link
           to="/login"
-          className="inline-flex items-center text-surface-400 hover:text-white text-sm mb-6 transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm text-surface-600 hover:text-surface-900 mb-6 transition-colors"
         >
-          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          Back to Login
+          Back to sign in
         </Link>
 
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
-          <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg ring-1 ring-white/20">
-              <img
-                src="/sukkur-iba-logo.png"
-                alt="Sukkur IBA University"
-                className="w-16 h-16 object-contain"
-              />
-            </div>
-            <h1 className="text-2xl font-bold text-white mb-1">Forgot Password</h1>
-            <p className="text-surface-400 text-sm">We'll send you a reset link</p>
-          </div>
-
+        <div className="card p-8 md:p-10">
           {submitted ? (
-            <div className="text-center space-y-4 animate-scale-in">
-              <div className="w-16 h-16 bg-accent-500/20 rounded-full flex items-center justify-center mx-auto">
-                <svg
-                  className="w-8 h-8 text-accent-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
+            <div className="text-center space-y-4">
+              <div className="w-14 h-14 rounded-full bg-primary-100 border border-primary-200 flex items-center justify-center mx-auto">
+                <svg className="w-7 h-7 text-primary-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <p className="text-surface-300">
-                If an account with that email exists, we've sent a password reset link to{' '}
-                <span className="text-primary-400 font-medium">{email}</span>
-              </p>
-              <p className="text-sm text-surface-500">
-                Please check your email. The link will expire in 1 hour.
-              </p>
+              <div>
+                <span className="eyebrow">Email sent</span>
+                <h2 className="font-serif text-2xl font-semibold text-surface-900 mt-1 mb-2">Check your inbox</h2>
+                <p className="text-surface-700">
+                  If an account exists for{' '}
+                  <span className="font-medium text-surface-900">{email}</span>, a reset link is on its way.
+                </p>
+                <p className="text-sm text-surface-500 mt-2">The link expires in 1 hour.</p>
+              </div>
               <Link
                 to="/login"
-                className="inline-block mt-4 text-primary-400 hover:text-primary-300 font-medium transition-colors"
+                className="inline-block mt-2 text-primary-800 hover:text-primary-900 font-medium underline underline-offset-2"
               >
-                Back to Login
+                Back to sign in
               </Link>
             </div>
           ) : (
             <>
-              <p className="text-surface-400 text-center text-sm mb-6">
-                Enter your email address and we'll send you a link to reset your password.
-              </p>
+              <div className="mb-7">
+                <img src="/sukkur-iba-logo.png" alt="" aria-hidden="true" className="w-12 h-12 mb-5" />
+                <span className="eyebrow">Password reset</span>
+                <h1 className="font-serif text-3xl font-semibold text-surface-900 mt-2">
+                  Forgot your password?
+                </h1>
+                <p className="text-sm text-surface-600 mt-2">
+                  Enter your email and we'll send you a link to reset it.
+                </p>
+              </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-surface-300 mb-1.5"
-                  >
+                  <label htmlFor="email" className="block text-sm font-medium text-surface-800 mb-1.5">
                     Email
                   </label>
                   <input
                     id="email"
                     type="email"
+                    autoComplete="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="input-modern"
-                    placeholder="your@email.com"
+                    placeholder="you@iba-suk.edu.pk"
                   />
                 </div>
 
-                <button type="submit" disabled={loading} className="btn-primary w-full">
-                  {loading ? 'Sending...' : 'Send Reset Link'}
+                <button type="submit" disabled={loading} className="btn-primary w-full py-3">
+                  {loading ? 'Sending…' : 'Send reset link'}
                 </button>
               </form>
             </>

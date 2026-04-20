@@ -5,7 +5,7 @@ import axios from 'axios';
 
 function VerifyEmail() {
   const [searchParams] = useSearchParams();
-  const [status, setStatus] = useState('verifying'); // 'verifying', 'success', 'error'
+  const [status, setStatus] = useState('verifying');
   const [message, setMessage] = useState('');
 
   useEffect(() => {
@@ -15,7 +15,6 @@ function VerifyEmail() {
       setMessage('Invalid verification link. No token provided.');
       return;
     }
-
     verifyEmail(token);
   }, [searchParams]);
 
@@ -34,77 +33,51 @@ function VerifyEmail() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-surface-900 via-primary-950 to-surface-900 relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-20 -left-20 w-80 h-80 bg-accent-500/10 rounded-full blur-3xl animate-float"></div>
-      </div>
-
-      <div className="relative z-10 w-full max-w-md mx-4 animate-fade-in-up">
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl text-center">
+    <div className="min-h-screen flex items-center justify-center bg-surface-50 px-4 py-10">
+      <div className="w-full max-w-md animate-fade-in-up">
+        <div className="card p-8 md:p-10 text-center">
           {status === 'verifying' && (
             <>
-              <div className="animate-spin rounded-full h-12 w-12 border-2 border-primary-400 border-t-transparent mx-auto mb-5"></div>
-              <h2 className="text-xl font-semibold text-white">Verifying your email...</h2>
-              <p className="text-surface-400 text-sm mt-2">Please wait a moment</p>
+              <div className="animate-spin rounded-full h-10 w-10 border-2 border-primary-700 border-t-transparent mx-auto mb-5" />
+              <span className="eyebrow">Please wait</span>
+              <h2 className="font-serif text-2xl font-semibold text-surface-900 mt-2">
+                Verifying your email…
+              </h2>
+              <p className="text-sm text-surface-600 mt-2">This should only take a moment.</p>
             </>
           )}
 
           {status === 'success' && (
-            <div className="animate-scale-in">
-              <div className="w-16 h-16 bg-accent-500/20 rounded-full flex items-center justify-center mx-auto mb-5">
-                <svg
-                  className="w-8 h-8 text-accent-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
+            <>
+              <div className="w-14 h-14 rounded-full bg-primary-100 border border-primary-200 flex items-center justify-center mx-auto mb-5">
+                <svg className="w-7 h-7 text-primary-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h2 className="text-xl font-bold text-accent-400 mb-2">Email Verified!</h2>
-              <p className="text-surface-300 mb-6">{message}</p>
-              <Link to="/login" className="btn-primary inline-block">
-                Go to Login
-              </Link>
-            </div>
+              <span className="eyebrow">Verified</span>
+              <h2 className="font-serif text-2xl font-semibold text-surface-900 mt-2 mb-2">Email verified</h2>
+              <p className="text-surface-700 mb-6">{message}</p>
+              <Link to="/login" className="btn-primary inline-flex">Go to sign in</Link>
+            </>
           )}
 
           {status === 'error' && (
-            <div className="animate-scale-in">
-              <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-5">
-                <svg
-                  className="w-8 h-8 text-red-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+            <>
+              <div className="w-14 h-14 rounded-full bg-red-50 border border-red-200 flex items-center justify-center mx-auto mb-5">
+                <svg className="w-7 h-7 text-red-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </div>
-              <h2 className="text-xl font-bold text-red-400 mb-2">Verification Failed</h2>
-              <p className="text-surface-300 mb-6">{message}</p>
+              <span className="eyebrow text-red-700">Verification failed</span>
+              <h2 className="font-serif text-2xl font-semibold text-surface-900 mt-2 mb-2">Something went wrong</h2>
+              <p className="text-surface-700 mb-6">{message}</p>
               <div className="space-y-3">
-                <Link to="/register" className="btn-primary block">
-                  Register Again
-                </Link>
-                <Link
-                  to="/login"
-                  className="block text-sm text-primary-400 hover:text-primary-300 transition-colors"
-                >
-                  Back to Login
+                <Link to="/register" className="btn-primary w-full">Register again</Link>
+                <Link to="/login" className="block text-sm text-primary-800 hover:text-primary-900 underline underline-offset-2">
+                  Back to sign in
                 </Link>
               </div>
-            </div>
+            </>
           )}
         </div>
       </div>
