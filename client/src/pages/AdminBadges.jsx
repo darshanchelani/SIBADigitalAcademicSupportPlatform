@@ -13,11 +13,36 @@ function AdminBadges() {
   const [selectedBadge, setSelectedBadge] = useState(null);
   const [assignUserId, setAssignUserId] = useState('');
   const [users, setUsers] = useState([]);
+  const [eligibleMods, setEligibleMods] = useState([]);
+  const [certLoading, setCertLoading] = useState(false);
 
   useEffect(() => {
     fetchBadges();
     fetchUsers();
+    fetchEligibleModerators();
   }, []);
+
+  const fetchEligibleModerators = async () => {
+    try {
+      const response = await axios.get('/gamification/eligible-moderators');
+      setEligibleMods(response.data);
+    } catch (error) {
+      // silent
+    }
+  };
+
+  const handleAwardCertificate = async (userId) => {
+    setCertLoading(true);
+    try {
+      await axios.post('/gamification/award-certificate', { userId });
+      toast.success('Certificate awarded successfully!');
+      fetchEligibleModerators();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to award certificate');
+    } finally {
+      setCertLoading(false);
+    }
+  };
 
   const fetchBadges = async () => {
     try {
@@ -250,6 +275,55 @@ function AdminBadges() {
           </div>
         </div>
       )}
+
+      {/* Moderator Certificates Section */}
+      <div className="mt-8">
+        <h2 className="section-title mb-4">Moderator Certificates</h2>
+        <p className="text-sm text-surface-500 mb-4">
+          Award certificates of appreciation to moderators who have responded to 50+ queries.
+        </p>
+        {eligibleMods.length === 0 ? (
+          <div className="card p-6 text-center">
+            <p className="text-surface-400">No moderators found</p>
+          </div>
+        ) : (
+          <div className="grid gap-3">
+            {eligibleMods.map((mod) => (
+              <div key={mod._id} className="card p-4 flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-surface-900">{mod.name}</p>
+                  <p className="text-xs text-surface-500">{mod.email}</p>
+                  <p className="text-sm mt-1">
+                    <span className={`badge ${mod.eligible ? 'badge-green' : 'badge-gray'}`}>
+                      {mod.responseCount} responses
+                    </span>
+                    {mod.certificateAwarded && (
+                      <span className="badge badge-purple ml-2">Certificate Awarded</span>
+                    )}
+                  </p>
+                </div>
+                <div>
+                  {mod.eligible && !mod.certificateAwarded ? (
+                    <button
+                      onClick={() => handleAwardCertificate(mod._id)}
+                      disabled={certLoading}
+                      className="btn-accent text-sm"
+                    >
+                      Award Certificate
+                    </button>
+                  ) : mod.certificateAwarded ? (
+                    <span className="text-xs text-primary-700 font-medium">✓ Awarded</span>
+                  ) : (
+                    <span className="text-xs text-surface-400">
+                      {50 - mod.responseCount} more needed
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

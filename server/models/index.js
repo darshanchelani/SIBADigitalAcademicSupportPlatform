@@ -186,12 +186,13 @@ const notificationSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true }, // recipient
   type: {
     type: String,
-    enum: ['NewQuery', 'QueryApproved', 'QueryRejected', 'NewResponse', 'General'],
+    enum: ['NewQuery', 'QueryApproved', 'QueryRejected', 'NewResponse', 'General', 'NewQuiz', 'Certificate'],
     required: true,
   },
   title: { type: String, required: true },
   message: { type: String, required: true },
   relatedQuery: { type: Schema.Types.ObjectId, ref: 'Query' },
+  relatedQuiz: { type: Schema.Types.ObjectId, ref: 'Quiz' },
   isRead: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
@@ -248,6 +249,31 @@ quizAttemptSchema.index({ quizId: 1, userId: 1 }, { unique: true });
 const QuizAttempt = mongoose.model('QuizAttempt', quizAttemptSchema);
 
 // ========================================
+// 13. CERTIFICATE
+// ========================================
+const certificateSchema = new Schema(
+  {
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    type: {
+      type: String,
+      enum: ['ModeratorAppreciation'],
+      required: true,
+    },
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    responseCount: { type: Number, required: true },
+    issuedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true }, // Admin who issued it
+    issuedAt: { type: Date, default: Date.now },
+    certificateId: { type: String, unique: true }, // Unique ID for sharing/verification
+  },
+  { timestamps: true }
+);
+
+certificateSchema.index({ userId: 1, type: 1 });
+
+const Certificate = mongoose.model('Certificate', certificateSchema);
+
+// ========================================
 // CREATE INDEXES FOR PERFORMANCE
 // ========================================
 async function createIndexes() {
@@ -258,6 +284,7 @@ async function createIndexes() {
     await Analytics.createIndexes();
     await Quiz.createIndexes();
     await QuizAttempt.createIndexes();
+    await Certificate.createIndexes();
     console.log('✅ Database indexes created');
   } catch (error) {
     console.error('❌ Error creating indexes:', error);
@@ -287,4 +314,5 @@ module.exports = {
   Notification,
   Quiz,
   QuizAttempt,
+  Certificate,
 };

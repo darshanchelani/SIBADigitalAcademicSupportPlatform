@@ -11,7 +11,7 @@ function TopNav({ user, onLogout, onToggleSidebar }) {
   const notifRef = useRef(null);
 
   useEffect(() => {
-    if (user?.role === 'Moderator' || user?.role === 'Admin') {
+    if (user) {
       fetchUnreadCount();
       const interval = setInterval(fetchUnreadCount, 30000); // Poll every 30s
       return () => clearInterval(interval);
@@ -76,7 +76,16 @@ function TopNav({ user, onLogout, onToggleSidebar }) {
       }
     }
     if (notif.relatedQuery) {
-      navigate(`/dashboard/moderator/queue/${notif.relatedQuery._id || notif.relatedQuery}`);
+      const queryPath = user?.role === 'Moderator' || user?.role === 'Admin'
+        ? `/dashboard/moderator/queue/${notif.relatedQuery._id || notif.relatedQuery}`
+        : `/dashboard/query/${notif.relatedQuery._id || notif.relatedQuery}`;
+      navigate(queryPath);
+      setShowNotifications(false);
+    } else if (notif.relatedQuiz) {
+      const quizPath = user?.role === 'Moderator' || user?.role === 'Admin'
+        ? '/dashboard/moderator/quizzes'
+        : '/dashboard/quizzes';
+      navigate(quizPath);
       setShowNotifications(false);
     }
   };
@@ -113,10 +122,10 @@ function TopNav({ user, onLogout, onToggleSidebar }) {
                 src="/sukkur-iba-logo.png"
                 alt=""
                 aria-hidden="true"
-                className="w-9 h-9 object-contain rounded-md"
+                className="w-9 h-9 object-contain rounded-full ring-1 ring-surface-200"
               />
               <span className="hidden sm:flex flex-col leading-tight text-left">
-                <span className="font-serif text-base font-semibold text-surface-900">SIBA</span>
+                <span className="font-serif text-base font-semibold text-surface-900">SDASP</span>
                 <span className="text-[10px] text-surface-500 tracking-wide uppercase">Academic Support</span>
               </span>
             </button>
@@ -152,7 +161,7 @@ function TopNav({ user, onLogout, onToggleSidebar }) {
 
           {/* Notifications & Profile */}
           <div className="flex items-center space-x-3">
-            {(user?.role === 'Moderator' || user?.role === 'Admin') && (
+            {user && (
               <div className="relative" ref={notifRef}>
                 <button
                   onClick={toggleNotifications}
